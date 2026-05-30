@@ -10,7 +10,7 @@
 
 **Goal:** Single operator can log QSOs, see rate/scoring, and export a valid Cabrillo file.
 **Mode:** mvp
-**Plans:** 5 plans in 3 waves
+**Plans:** 1/5 plans executed
 
 **Success Criteria:**
 
@@ -26,7 +26,7 @@
 **Plans:**
 **Wave 1**
 
-- [ ] 01-01-PLAN.md — Walking Skeleton: scaffold Go + SvelteKit, SQLite schema, QSO CRUD API, QSO entry form, log table, dev build
+- [x] 01-01-PLAN.md — Walking Skeleton: scaffold Go + SvelteKit, SQLite schema, QSO CRUD API, QSO entry form, log table, dev build
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
