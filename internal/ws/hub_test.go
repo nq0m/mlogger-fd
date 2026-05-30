@@ -107,10 +107,15 @@ func TestHubUnregister(t *testing.T) {
 	}
 }
 
-// TestHubBroadcast verifies Broadcast marshals and pushes to broadcast channel.
+// TestHubBroadcast verifies Broadcast marshals JSON and delivers to registered clients.
 func TestHubBroadcast(t *testing.T) {
 	h := NewHub()
 	go h.Run()
+	time.Sleep(10 * time.Millisecond)
+
+	// Register a client to receive the broadcast
+	c := &Client{Hub: h, Send: make(chan []byte, 64)}
+	h.register <- c
 	time.Sleep(10 * time.Millisecond)
 
 	msg := map[string]string{"type": "test", "data": "hello"}
@@ -119,9 +124,9 @@ func TestHubBroadcast(t *testing.T) {
 		t.Fatalf("Broadcast failed: %v", err)
 	}
 
-	// The broadcast should arrive on h.broadcast channel
+	// The message should be fanned out to the registered client
 	select {
-	case data := <-h.broadcast:
+	case data := <-c.Send:
 		var decoded map[string]string
 		if err := json.Unmarshal(data, &decoded); err != nil {
 			t.Fatalf("failed to unmarshal broadcast data: %v", err)
@@ -133,7 +138,7 @@ func TestHubBroadcast(t *testing.T) {
 			t.Errorf("expected data='hello', got %q", decoded["data"])
 		}
 	case <-time.After(100 * time.Millisecond):
-		t.Error("broadcast message not received on broadcast channel")
+		t.Error("broadcast message not delivered to client")
 	}
 }
 
@@ -280,7 +285,7 @@ func wsTestServer(t *testing.T, handler func(*Hub)) (*Hub, *httptest.Server) {
 
 // TestClientWritePump verifies messages on Send channel are written to WebSocket.
 func TestClientWritePump(t *testing.T) {
-	_, srv := wsTestServer(t, nil)
+	h, srv := wsTestServer(t, nil)
 
 	// Convert http:// to ws://
 	url := "ws" + strings.TrimPrefix(srv.URL, "http")
@@ -292,14 +297,31 @@ func TestClientWritePump(t *testing.T) {
 	}
 	defer ws.Close()
 
-	// Set a read deadline so we don't hang
-	ws.SetReadDeadline(time.Now().Add(2 * time.Second))
+	// Wait for the client to be registered
+	time.Sleep(20 * time.Millisecond)
 
-	// The test server's WritePump sends on the client's Send channel
-	// But we're testing from the client side. We need to trigger a write.
-	// The WritePump reads from Send and writes to Conn.
-	// Currently Hub.Run() handles broadcast → client.Send. 
-	// For a direct WritePump test, we need to send to the client's Send channel externally.
-	// This test will be updated after GREEN phase when the hub is fully wired.
-	t.Skip("WritePump integration test requires full hub wiring — tested via fan-out tests")
+	// Broadcast a message through the hub — this will fan out to all clients
+	// The WritePump reads from client.Send and writes to the WebSocket connection
+	testMsg := map[string]string{"type": "write_pump_test", "value": "pong"}
+	if err := h.Broadcast(testMsg); err != nil {
+		t.Fatalf("Broadcast failed: %v", err)
+	}
+
+	// Read the message from the WebSocket client — proves WritePump wrote it
+	ws.SetReadDeadline(time.Now().Add(2 * time.Second))
+	_, msgBytes, err := ws.ReadMessage()
+	if err != nil {
+		t.Fatalf("failed to read WebSocket message: %v", err)
+	}
+
+	var decoded map[string]string
+	if err := json.Unmarshal(msgBytes, &decoded); err != nil {
+		t.Fatalf("failed to unmarshal received message: %v", err)
+	}
+	if decoded["type"] != "write_pump_test" {
+		t.Errorf("expected type='write_pump_test', got %q", decoded["type"])
+	}
+	if decoded["value"] != "pong" {
+		t.Errorf("expected value='pong', got %q", decoded["value"])
+	}
 }
