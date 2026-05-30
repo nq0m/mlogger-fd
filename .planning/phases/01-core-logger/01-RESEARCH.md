@@ -846,29 +846,34 @@ func exportCabrillo(w http.ResponseWriter, r *http.Request) {
 | A7 | Points calculation table (2-pt vs 1-pt modes) from planning doc is complete for Field Day Phase 1 | Code Examples | MEDIUM — if ARRL changes mode classifications, update the map |
 | A8 | Cabrillo frequency mapping (band → kHz) follows standard Field Day conventions | Code Examples | LOW — well-established ARRL format; documented in Appendix A |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Go version on development machine**
+1. **Go version on development machine** (RESOLVED)
+   - Resolution: Go 1.22+ to be installed via `snap install go --classic` before Phase 1 implementation. Documented as prerequisite in PLAN.md.
    - What we know: Go is NOT installed on the current dev machine (`command -v go` returns empty)
    - What's unclear: Whether Go will be installed before implementation, or if an alternate build environment will be used
    - Recommendation: Install Go 1.22+ via `snap install go --classic` or `apt install golang-go` before Phase 1 implementation begins. Document as a prerequisite in PLAN.md.
 
-2. **SvelteKit project init vs manual scaffold**
+2. **SvelteKit project init vs manual scaffold** (RESOLVED)
+   - Resolution: Use `npm create svelte@latest` with "Skeleton" template as specified in Plan 01-01 Task 2.
    - What we know: `npm create svelte@latest` is the standard way to start a SvelteKit project. The CONTEXT.md specifies SvelteKit but not whether `npm create` should be used.
    - What's unclear: Whether the project should be scaffolded with `npm create svelte@latest` (which adds demo content and config) and then stripped down, or manually scaffolded
    - Recommendation: Use `npm create svelte@latest` with the "Skeleton" template (no demo app) to get proper config files, then configure for SPA mode with adapter-static.
 
-3. **Go module path for the project**
+3. **Go module path for the project** (RESOLVED)
+   - Resolution: `github.com/jeremy/mlogger-fd` — specified in Plan 01-01 Task 2.
    - What we know: The project is named "Field Day Logger" but no Go module path is specified
    - What's unclear: What module path to use in `go.mod`
    - Recommendation: Use `github.com/jeremy/mlogger-fd` (matching the repo directory) or a simpler path. Document in PLAN.md.
 
-4. **Station configuration for Phase 1**
+4. **Station configuration for Phase 1** (RESOLVED)
+   - Resolution: Hardcode "N0CALL" for Cabrillo export headers. Phase 2 adds station config UI. Documented in Plan 01-05.
    - What we know: Station config (callsign, class, section) is deferred to Phase 2 per the roadmap. Phase 1 needs a callsign for Cabrillo export headers.
    - What's unclear: Whether to hardcode "N0CALL" (placeholder), use a config file, or add a minimal station config endpoint
    - Recommendation: Hardcode "N0CALL" for Phase 1 Cabrillo export. Phase 2 will add the station configuration UI. Document as known limitation.
 
-5. **Frontend routing needs**
+5. **Frontend routing needs** (RESOLVED)
+   - Resolution: Single `+page.svelte` composing three component panels — as implemented in Plan 01-01 Task 4.
    - What we know: D-04 specifies a single-page three-panel layout — no tab switching, no separate pages
    - What's unclear: Whether SvelteKit's file-based routing is overkill for a single-page app. A single `+page.svelte` with three component imports may be sufficient.
    - Recommendation: Start with a single `+page.svelte` route composing three components. Add SvelteKit routes only if navigation complexity grows (unlikely in Phase 1).
