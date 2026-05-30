@@ -15,3 +15,13 @@ CREATE TABLE IF NOT EXISTS qsos (
 CREATE INDEX IF NOT EXISTS idx_qsos_callsign ON qsos(callsign);
 CREATE INDEX IF NOT EXISTS idx_qsos_timestamp ON qsos(timestamp);
 CREATE INDEX IF NOT EXISTS idx_qsos_band_mode ON qsos(band, mode);
+
+CREATE TABLE IF NOT EXISTS station_config (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    callsign TEXT NOT NULL DEFAULT 'N0CALL',
+    class TEXT NOT NULL DEFAULT '1D',
+    arrl_section TEXT NOT NULL DEFAULT 'EMA',
+    transmitter_count INTEGER NOT NULL DEFAULT 1,
+    power_level TEXT NOT NULL DEFAULT 'LOW',
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
