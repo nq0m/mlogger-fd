@@ -25,11 +25,11 @@ func TestNewHub(t *testing.T) {
 	if h.broadcast == nil {
 		t.Error("Hub.broadcast channel should be initialized")
 	}
-	if h.register == nil {
-		t.Error("Hub.register channel should be initialized")
+	if h.Register == nil {
+		t.Error("Hub.Register channel should be initialized")
 	}
-	if h.unregister == nil {
-		t.Error("Hub.unregister channel should be initialized")
+	if h.Unregister == nil {
+		t.Error("Hub.Unregister channel should be initialized")
 	}
 	if cap(h.broadcast) != 256 {
 		t.Errorf("broadcast channel buffer should be 256, got %d", cap(h.broadcast))
@@ -48,7 +48,7 @@ func TestHubRegister(t *testing.T) {
 		Hub:  h,
 		Send: make(chan []byte, 64),
 	}
-	h.register <- client
+	h.Register <- client
 
 	// Give Run() time to process
 	time.Sleep(10 * time.Millisecond)
@@ -77,11 +77,11 @@ func TestHubUnregister(t *testing.T) {
 	}
 
 	// Register first
-	h.register <- client
+	h.Register <- client
 	time.Sleep(10 * time.Millisecond)
 
 	// Then unregister
-	h.unregister <- client
+		h.Unregister <- client
 	time.Sleep(10 * time.Millisecond)
 
 	h.mu.RLock()
@@ -115,7 +115,7 @@ func TestHubBroadcast(t *testing.T) {
 
 	// Register a client to receive the broadcast
 	c := &Client{Hub: h, Send: make(chan []byte, 64)}
-	h.register <- c
+	h.Register <- c
 	time.Sleep(10 * time.Millisecond)
 
 	msg := map[string]string{"type": "test", "data": "hello"}
@@ -151,8 +151,8 @@ func TestHubRunFanOut(t *testing.T) {
 	// Register two clients
 	c1 := &Client{Hub: h, Send: make(chan []byte, 64)}
 	c2 := &Client{Hub: h, Send: make(chan []byte, 64)}
-	h.register <- c1
-	h.register <- c2
+	h.Register <- c1
+	h.Register <- c2
 	time.Sleep(10 * time.Millisecond)
 
 	// Send a broadcast message directly into the broadcast channel
@@ -180,7 +180,7 @@ func TestHubNonBlockingSend(t *testing.T) {
 
 	// Create client with small send buffer
 	c := &Client{Hub: h, Send: make(chan []byte, 1)}
-	h.register <- c
+	h.Register <- c
 	time.Sleep(10 * time.Millisecond)
 
 	// Fill the send channel to capacity
@@ -216,7 +216,7 @@ func TestHubConcurrent(t *testing.T) {
 		go func(id int) {
 			defer wg.Done()
 			c := &Client{Hub: h, Send: make(chan []byte, 64)}
-			h.register <- c
+			h.Register <- c
 			time.Sleep(1 * time.Millisecond)
 
 			// Broadcast a message
@@ -225,7 +225,7 @@ func TestHubConcurrent(t *testing.T) {
 			time.Sleep(1 * time.Millisecond)
 
 			// Unregister
-			h.unregister <- c
+			h.Unregister <- c
 		}(i)
 	}
 
@@ -236,7 +236,7 @@ func TestHubConcurrent(t *testing.T) {
 
 	// Should be able to register a new client
 	c := &Client{Hub: h, Send: make(chan []byte, 64)}
-	h.register <- c
+	h.Register <- c
 	time.Sleep(10 * time.Millisecond)
 
 	h.mu.RLock()
@@ -273,7 +273,7 @@ func wsTestServer(t *testing.T, handler func(*Hub)) (*Hub, *httptest.Server) {
 			Conn: conn,
 			Send: make(chan []byte, 64),
 		}
-		h.register <- client
+		h.Register <- client
 
 		go client.WritePump()
 		client.ReadPump()

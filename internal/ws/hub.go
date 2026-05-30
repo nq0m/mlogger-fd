@@ -14,8 +14,8 @@ type Hub struct {
 	mu         sync.RWMutex
 	clients    map[*Client]bool
 	broadcast  chan []byte
-	register   chan *Client
-	unregister chan *Client
+	Register   chan *Client
+	Unregister chan *Client
 }
 
 // Client represents a single WebSocket connection.
@@ -30,8 +30,8 @@ func NewHub() *Hub {
 	return &Hub{
 		clients:    make(map[*Client]bool),
 		broadcast:  make(chan []byte, 256),
-		register:   make(chan *Client),
-		unregister: make(chan *Client),
+		Register:   make(chan *Client),
+		Unregister: make(chan *Client),
 	}
 }
 
@@ -39,13 +39,13 @@ func NewHub() *Hub {
 func (h *Hub) Run() {
 	for {
 		select {
-		case client := <-h.register:
+		case client := <-h.Register:
 			h.mu.Lock()
 			h.clients[client] = true
 			h.mu.Unlock()
 			slog.Info("websocket client connected", "total", len(h.clients))
 
-		case client := <-h.unregister:
+		case client := <-h.Unregister:
 			h.mu.Lock()
 			if _, ok := h.clients[client]; ok {
 				delete(h.clients, client)
@@ -84,7 +84,7 @@ func (h *Hub) Broadcast(v interface{}) error {
 // Exits when the connection is closed or an error occurs.
 func (c *Client) ReadPump() {
 	defer func() {
-		c.Hub.unregister <- c
+		c.Hub.Unregister <- c
 		c.Conn.Close()
 	}()
 

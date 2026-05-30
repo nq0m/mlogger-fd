@@ -3,6 +3,7 @@ package handler
 import (
 	"database/sql"
 	"encoding/json"
+	"log/slog"
 	"net/http"
 	"strconv"
 	"time"
@@ -64,6 +65,25 @@ func CreateQSO(db *sql.DB, hub *ws.Hub, w http.ResponseWriter, r *http.Request) 
 	}
 
 	id, _ := result.LastInsertId()
+
+	// Broadcast to WebSocket clients
+	if hub != nil {
+		if err := hub.Broadcast(map[string]interface{}{
+			"type":          "qso_created",
+			"id":            id,
+			"timestamp":     now,
+			"callsign":      input.Callsign,
+			"band":          input.Band,
+			"mode":          input.Mode,
+			"recv_exchange": input.RecvExchange,
+			"sent_exchange": input.SentExchange,
+			"operator":      input.Operator,
+			"is_dupe":       isDupe,
+			"points":        points,
+		}); err != nil {
+			slog.Warn("failed to broadcast QSO", "error", err)
+		}
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
