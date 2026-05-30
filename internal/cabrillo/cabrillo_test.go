@@ -31,6 +31,44 @@ func setupCabrilloTestDB(t *testing.T) *sql.DB {
 	if err != nil {
 		t.Fatalf("failed to create table: %v", err)
 	}
+	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS station_config (
+		id INTEGER PRIMARY KEY CHECK (id = 1),
+		callsign TEXT NOT NULL DEFAULT 'N0CALL',
+		class TEXT NOT NULL DEFAULT '1D',
+		arrl_section TEXT NOT NULL DEFAULT 'EMA',
+		transmitter_count INTEGER NOT NULL DEFAULT 1,
+		power_level TEXT NOT NULL DEFAULT 'LOW',
+		updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+	)`)
+	if err != nil {
+		t.Fatalf("failed to create station_config table: %v", err)
+	}
+	t.Cleanup(func() { db.Close() })
+	return db
+}
+
+func setupCabrilloTestDB_NoConfig(t *testing.T) *sql.DB {
+	t.Helper()
+	db, err := sql.Open("sqlite", ":memory:?_pragma=journal_mode(WAL)")
+	if err != nil {
+		t.Fatalf("failed to open test DB: %v", err)
+	}
+	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS qsos (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		timestamp TEXT NOT NULL,
+		callsign TEXT NOT NULL,
+		band TEXT NOT NULL,
+		mode TEXT NOT NULL,
+		sent_exchange TEXT NOT NULL,
+		recv_exchange TEXT NOT NULL,
+		operator TEXT,
+		is_dupe INTEGER NOT NULL DEFAULT 0,
+		points INTEGER NOT NULL DEFAULT 0,
+		created_at TEXT NOT NULL DEFAULT (datetime('now'))
+	)`)
+	if err != nil {
+		t.Fatalf("failed to create table: %v", err)
+	}
 	t.Cleanup(func() { db.Close() })
 	return db
 }
@@ -203,5 +241,107 @@ func TestGenerate_ExchangePadding(t *testing.T) {
 
 	if !strings.Contains(result, "K1ABC") && !strings.Contains(result, "2A NH") {
 		t.Error("expected callsign and exchange in QSO line")
+	}
+}
+
+func TestGenerate_WithConfig(t *testing.T) {
+	db := setupCabrilloTestDB(t)
+
+	db.Exec(`INSERT OR REPLACE INTO station_config (id, callsign, class, arrl_section, power_level)
+		VALUES (1, 'K1ABC', '2A', 'SNJ', 'HIGH')`)
+
+	result, err := Generate(db)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if !strings.Contains(result, "CALLSIGN: K1ABC") {
+		t.Error("expected CALLSIGN: K1ABC from station_config")
+	}
+	if !strings.Contains(result, "ARRL-SECTION: SNJ") {
+		t.Error("expected ARRL-SECTION: SNJ from station_config")
+	}
+	if !strings.Contains(result, "CATEGORY-POWER: HIGH") {
+		t.Error("expected CATEGORY-POWER: HIGH from station_config")
+	}
+	if !strings.Contains(result, "CATEGORY-CLASS: 2A") {
+		t.Error("expected CATEGORY-CLASS: 2A from station_config")
+	}
+}
+
+func TestGenerate_ConfigFallback_NoRow(t *testing.T) {
+	db := setupCabrilloTestDB(t)
+	// station_config table exists but no row inserted — should fall back to defaults
+
+	result, err := Generate(db)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if !strings.Contains(result, "CALLSIGN: N0CALL") {
+		t.Error("expected fallback CALLSIGN: N0CALL when no config row")
+	}
+	if !strings.Contains(result, "ARRL-SECTION: NH") {
+		t.Error("expected fallback ARRL-SECTION: NH when no config row")
+	}
+}
+
+func TestGenerate_ConfigFallback_NoTable(t *testing.T) {
+	db := setupCabrilloTestDB_NoConfig(t)
+	// station_config table does not exist at all — should fall back to defaults
+
+	result, err := Generate(db)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if !strings.Contains(result, "CALLSIGN: N0CALL") {
+		t.Error("expected fallback CALLSIGN: N0CALL when no station_config table")
+	}
+	if !strings.Contains(result, "ARRL-SECTION: NH") {
+		t.Error("expected fallback ARRL-SECTION: NH when no station_config table")
+	}
+}
+
+func TestGenerate_ConfigFallback_EmptyClass(t *testing.T) {
+	db := setupCabrilloTestDB(t)
+
+	db.Exec(`INSERT OR REPLACE INTO station_config (id, callsign, class, arrl_section, power_level)
+		VALUES (1, 'W1AW', '', 'CT', 'LOW')`)
+
+	result, err := Generate(db)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if !strings.Contains(result, "CATEGORY-CLASS: 1D") {
+		t.Error("expected fallback CATEGORY-CLASS: 1D when class is empty string")
+	}
+}
+
+func TestGenerate_ConfigDoesNotAffectQSOs(t *testing.T) {
+	db := setupCabrilloTestDB(t)
+
+	db.Exec(`INSERT OR REPLACE INTO station_config (id, callsign, class, arrl_section, power_level)
+		VALUES (1, 'K1ABC', '2A', 'SNJ', 'HIGH')`)
+
+	ts := "2026-06-27T18:00:00Z"
+	db.Exec(`INSERT INTO qsos (timestamp, callsign, band, mode, sent_exchange, recv_exchange, points)
+		VALUES (?, 'W1XYZ', '20M', 'CW', '1D EMA', '2A NH', 2)`, ts)
+
+	result, err := Generate(db)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	// QSO line should still contain the QSO callsign, not the station callsign
+	if !strings.Contains(result, "QSO:") {
+		t.Error("expected QSO lines in output")
+	}
+	if !strings.Contains(result, "W1XYZ") {
+		t.Error("expected W1XYZ QSO in output")
+	}
+	if !strings.Contains(result, "CLAIMED-SCORE:") {
+		t.Error("expected CLAIMED-SCORE in output")
 	}
 }
