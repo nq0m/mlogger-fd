@@ -9,6 +9,7 @@
 ### Phase 1: Core Logger
 **Goal:** Single operator can log QSOs, see rate/scoring, and export a valid Cabrillo file.
 **Mode:** mvp
+**Plans:** 5 plans in 3 waves
 
 **Success Criteria:**
 1. Operator can submit a QSO via form (callsign, band, mode, exchange) using keyboard shortcuts and see it persisted
@@ -20,6 +21,13 @@
 7. Logged QSOs can be searched, viewed, and edited
 
 **Requirements:** QSO-01, QSO-02, QSO-03, QSO-04, DUPE-01, DUPE-02, DUPE-03, SCOR-01, SCOR-02, SCOR-03, EXPR-01, EXPR-02
+
+**Plans:**
+- [ ] 01-01-PLAN.md — Walking Skeleton: scaffold Go + SvelteKit, SQLite schema, QSO CRUD API, QSO entry form, log table, dev build
+- [ ] 01-02-PLAN.md — Dupe Detection + Validation: exact dupe check, partial call similarity, client-side dupe warnings, dupe marking
+- [ ] 01-03-PLAN.md — Live Stats Dashboard: rate meter, score display, band/mode breakdown, StatsBar component
+- [ ] 01-04-PLAN.md — QSO Search & Inline Edit: callsign search, inline row editing, pagination (50/page)
+- [ ] 01-05-PLAN.md — Cabrillo Export: ARRL format generation, one-click download button
 
 **Key Deliverables:**
 - Go backend with SQLite schema, REST API for QSO CRUD, dupe checking, points calculation
