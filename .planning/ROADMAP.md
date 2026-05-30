@@ -10,7 +10,7 @@
 
 **Goal:** Single operator can log QSOs, see rate/scoring, and export a valid Cabrillo file.
 **Mode:** mvp
-**Plans:** 4/5 plans executed
+**Plans:** 5/5 plans complete
 
 **Success Criteria:**
 
@@ -36,7 +36,7 @@
 **Wave 3** *(blocked on Wave 2 completion)*
 
 - [x] 01-04-PLAN.md — QSO Search & Inline Edit: callsign search, inline row editing, pagination (50/page)
-- [ ] 01-05-PLAN.md — Cabrillo Export: ARRL format generation, one-click download button
+- [x] 01-05-PLAN.md — Cabrillo Export: ARRL format generation, one-click download button
 
 **Key Deliverables:**
 
