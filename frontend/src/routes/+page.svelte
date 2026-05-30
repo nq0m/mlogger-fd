@@ -2,6 +2,7 @@
 	import QsoEntryForm from '$lib/components/QsoEntryForm.svelte';
 	import StatsBar from '$lib/components/StatsBar.svelte';
 	import LogTable from '$lib/components/LogTable.svelte';
+	import StationConfig from '$lib/components/StationConfig.svelte';
 
 	function exportCabrillo() {
 		window.location.href = '/api/export/cabrillo';
@@ -10,7 +11,10 @@
 
 <div class="header-bar">
 	<h1 class="title">FD Logger</h1>
-	<button class="export-btn" onclick={exportCabrillo}>Export Cabrillo</button>
+	<div class="header-actions">
+		<StationConfig />
+		<button class="export-btn" onclick={exportCabrillo}>Export Cabrillo</button>
+	</div>
 </div>
 <QsoEntryForm />
 <StatsBar />
@@ -24,12 +28,19 @@
 		padding: 6px 16px;
 		background: #1a3a6b;
 		color: #fff;
+		position: relative;
 	}
 
 	.title {
 		font-size: 18px;
 		font-weight: 700;
 		margin: 0;
+	}
+
+	.header-actions {
+		display: flex;
+		align-items: center;
+		gap: 8px;
 	}
 
 	.export-btn {

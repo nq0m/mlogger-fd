@@ -49,3 +49,24 @@ export async function searchQsos(query, limit = 50, offset = 0) {
 	}
 	return res.json();
 }
+
+export async function getStationConfig() {
+	const res = await fetch(`${BASE_URL}/api/station-config`);
+	if (!res.ok) {
+		throw new Error('Failed to fetch station config');
+	}
+	return res.json();
+}
+
+export async function putStationConfig(data) {
+	const res = await fetch(`${BASE_URL}/api/station-config`, {
+		method: 'PUT',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(data)
+	});
+	const json = await res.json();
+	if (!res.ok) {
+		throw new Error(json.error || 'Failed to save station config');
+	}
+	return json;
+}

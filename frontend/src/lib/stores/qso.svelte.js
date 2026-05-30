@@ -10,6 +10,14 @@ export const stats = $state({
 	breakdown: {}
 });
 
+export const stationConfig = $state({
+	callsign: 'N0CALL',
+	class: '1D',
+	arrl_section: 'EMA',
+	transmitter_count: 1,
+	power_level: 'LOW'
+});
+
 export function addQso(qso) {
 	qsos.unshift(qso);
 }
