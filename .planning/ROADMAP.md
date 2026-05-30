@@ -99,6 +99,13 @@
 6. App loads from cache when server is unavailable (Service Worker)
 
 **Requirements:** SYNC-03, SYNC-04, SYNC-05, SYNC-06, UX-01, UX-02, UX-04
+**Plans:** 4 plans
+
+**Plans:**
+- [ ] 03-01-PLAN.md — Offline QSO Logging & Sync: server /api/sync, Dexie.js, offline write path, connection indicator (SYNC-03, SYNC-04, SYNC-05)
+- [ ] 03-02-PLAN.md — Offline Cache & Dupe: IndexedDB cache population, offline dupe check (SYNC-06)
+- [ ] 03-03-PLAN.md — Dark Mode: CSS variables, color migration, toggle button (UX-02)
+- [ ] 03-04-PLAN.md — Mobile + SW + Debounce: responsive layout, touch targets, service worker, rate limiting (UX-01, UX-04)
 
 **Key Deliverables:**
 
