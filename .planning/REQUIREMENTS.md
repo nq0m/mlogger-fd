@@ -29,7 +29,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Multi-User & Sync
 
 - [ ] **SYNC-01**: Multiple operators on LAN can log to the same server database simultaneously
-- [ ] **SYNC-02**: New QSOs broadcast via WebSocket to all connected clients in real-time
+- [x] **SYNC-02**: New QSOs broadcast via WebSocket to all connected clients in real-time
 - [ ] **SYNC-03**: Each client buffers QSOs locally via IndexedDB when server is unreachable
 - [ ] **SYNC-04**: Buffered QSOs auto-sync to server when connection is restored
 - [ ] **SYNC-05**: Connection status indicator shows online/offline state in the UI
@@ -37,8 +37,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Station Configuration
 
-- [ ] **CONF-01**: Station admin configures station callsign, class, ARRL section, transmitter count, and power level
-- [ ] **CONF-02**: Operator identity can be set per logging session (callsign or name)
+- [x] **CONF-01**: Station admin configures station callsign, class, ARRL section, transmitter count, and power level
+- [x] **CONF-02**: Operator identity can be set per logging session (callsign or name)
 - [ ] **CONF-03**: Station configuration persists across server restarts
 
 ### Export
@@ -112,13 +112,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SCOR-02 | Phase 1 | Pending |
 | SCOR-03 | Phase 1 | Pending |
 | SYNC-01 | Phase 2 | Pending |
-| SYNC-02 | Phase 2 | Pending |
+| SYNC-02 | Phase 2 | Complete |
 | SYNC-03 | Phase 3 | Pending |
 | SYNC-04 | Phase 3 | Pending |
 | SYNC-05 | Phase 3 | Pending |
 | SYNC-06 | Phase 3 | Pending |
-| CONF-01 | Phase 2 | Pending |
-| CONF-02 | Phase 2 | Pending |
+| CONF-01 | Phase 2 | Complete |
+| CONF-02 | Phase 2 | Complete |
 | CONF-03 | Phase 2 | Pending |
 | EXPR-01 | Phase 1 | Pending |
 | EXPR-02 | Phase 1 | Pending |

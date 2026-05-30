@@ -63,10 +63,10 @@
 5. Live scoreboard updates for all clients when any operator logs a QSO
 
 **Requirements:** SYNC-01, SYNC-02, CONF-01, CONF-02, CONF-03
-**Plans:** 5 plans
+**Plans:** 1/5 plans executed
 
 **Plans:**
-- [ ] 02-00-PLAN.md — Wave 0 Test Scaffolding: StationConfig.test.js, ws.test.js, OperatorSelector.test.js stubs
+- [x] 02-00-PLAN.md — Wave 0 Test Scaffolding: StationConfig.test.js, ws.test.js, OperatorSelector.test.js stubs
 - [ ] 02-01-PLAN.md — Station Configuration: SQLite table → REST API → Svelte UI (CONF-01, CONF-03)
 - [ ] 02-02-PLAN.md — WebSocket Hub: gorilla/websocket hub + broadcast in CreateQSO + station config route wiring (SYNC-01, SYNC-02 server)
 - [ ] 02-03-PLAN.md — Frontend WebSocket: client WS listener + Operator identity selector (SYNC-02 client, CONF-02)
