@@ -8,6 +8,7 @@ export default defineConfig({
     include: ['src/**/*.test.js']
   },
   resolve: {
+    conditions: ['browser'],
     alias: { '$lib': '/src/lib' }
   }
 });
