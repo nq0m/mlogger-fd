@@ -10,7 +10,7 @@
 
 **Goal:** Single operator can log QSOs, see rate/scoring, and export a valid Cabrillo file.
 **Mode:** mvp
-**Plans:** 2/5 plans executed
+**Plans:** 3/5 plans executed
 
 **Success Criteria:**
 
@@ -31,7 +31,7 @@
 **Wave 2** *(blocked on Wave 1 completion)*
 
 - [x] 01-02-PLAN.md — Dupe Detection + Validation: exact dupe check, partial call similarity, client-side dupe warnings, dupe marking
-- [ ] 01-03-PLAN.md — Live Stats Dashboard: rate meter, score display, band/mode breakdown, StatsBar component
+- [x] 01-03-PLAN.md — Live Stats Dashboard: rate meter, score display, band/mode breakdown, StatsBar component
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
