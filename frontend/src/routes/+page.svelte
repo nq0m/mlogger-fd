@@ -1,8 +1,15 @@
 <script>
+	import { onMount } from 'svelte';
 	import QsoEntryForm from '$lib/components/QsoEntryForm.svelte';
 	import StatsBar from '$lib/components/StatsBar.svelte';
 	import LogTable from '$lib/components/LogTable.svelte';
 	import StationConfig from '$lib/components/StationConfig.svelte';
+	import OperatorSelector from '$lib/components/OperatorSelector.svelte';
+	import { connectWebSocket, wsState } from '$lib/ws.svelte.js';
+
+	onMount(() => {
+		connectWebSocket();
+	});
 
 	function exportCabrillo() {
 		window.location.href = '/api/export/cabrillo';
@@ -10,8 +17,16 @@
 </script>
 
 <div class="header-bar">
-	<h1 class="title">FD Logger</h1>
-	<div class="header-actions">
+	<div class="header-left">
+		<h1 class="title">FD Logger</h1>
+		<span class="ws-status" class:online={wsState.connected} class:offline={!wsState.connected}>
+			{wsState.connected ? '● Live' : '● Disconnected'}
+		</span>
+	</div>
+	<div class="header-center">
+		<OperatorSelector />
+	</div>
+	<div class="header-right">
 		<StationConfig />
 		<button class="export-btn" onclick={exportCabrillo}>Export Cabrillo</button>
 	</div>
@@ -28,7 +43,24 @@
 		padding: 6px 16px;
 		background: #1a3a6b;
 		color: #fff;
-		position: relative;
+		gap: 12px;
+	}
+
+	.header-left {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+	}
+
+	.header-center {
+		display: flex;
+		align-items: center;
+	}
+
+	.header-right {
+		display: flex;
+		align-items: center;
+		gap: 8px;
 	}
 
 	.title {
@@ -37,10 +69,19 @@
 		margin: 0;
 	}
 
-	.header-actions {
-		display: flex;
-		align-items: center;
-		gap: 8px;
+	.ws-status {
+		font-size: 11px;
+		padding: 2px 8px;
+		border-radius: 4px;
+		font-weight: 600;
+	}
+
+	.ws-status.online {
+		color: #1a7a1a;
+	}
+
+	.ws-status.offline {
+		color: #cc3300;
 	}
 
 	.export-btn {
