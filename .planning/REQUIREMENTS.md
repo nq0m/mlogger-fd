@@ -39,7 +39,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **CONF-01**: Station admin configures station callsign, class, ARRL section, transmitter count, and power level
 - [x] **CONF-02**: Operator identity can be set per logging session (callsign or name)
-- [ ] **CONF-03**: Station configuration persists across server restarts
+- [x] **CONF-03**: Station configuration persists across server restarts
 
 ### Export
 
@@ -119,7 +119,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SYNC-06 | Phase 3 | Pending |
 | CONF-01 | Phase 2 | Complete |
 | CONF-02 | Phase 2 | Complete |
-| CONF-03 | Phase 2 | Pending |
+| CONF-03 | Phase 2 | Complete |
 | EXPR-01 | Phase 1 | Pending |
 | EXPR-02 | Phase 1 | Pending |
 | UX-01 | Phase 3 | Pending |
