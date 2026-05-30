@@ -47,6 +47,12 @@ func main() {
 		r.Get("/export/cabrillo", func(w http.ResponseWriter, r *http.Request) {
 			handler.ExportCabrillo(database, w, r)
 		})
+		r.Get("/station-config", func(w http.ResponseWriter, r *http.Request) {
+			handler.GetStationConfig(database, w, r)
+		})
+		r.Put("/station-config", func(w http.ResponseWriter, r *http.Request) {
+			handler.PutStationConfig(database, w, r)
+		})
 		r.Route("/qso", func(r chi.Router) {
 			r.Post("/", func(w http.ResponseWriter, r *http.Request) {
 				handler.CreateQSO(database, w, r)
