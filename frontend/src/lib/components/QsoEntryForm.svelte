@@ -1,6 +1,6 @@
 <script>
 	import { createQSO, checkDupe } from '$lib/api.js';
-	import { addQso } from '$lib/stores/qso.svelte.js';
+	import { addQso, fetchStats } from '$lib/stores/qso.svelte.js';
 
 	const bands = ['160M', '80M', '40M', '20M', '15M', '10M', '6M', '2M', '70CM'];
 	const modes = ['CW', 'SSB', 'FM', 'RTTY', 'FT8', 'FT4', 'PSK31'];
@@ -60,6 +60,7 @@
 				recv_exchange: recvExchange
 			});
 			addQso(result);
+			fetchStats();
 			if (result.is_dupe) {
 				dupeWarning = 'Logged as duplicate (0 points)';
 			} else {

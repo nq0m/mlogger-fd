@@ -41,6 +41,9 @@ func main() {
 		r.Get("/check-dupe", func(w http.ResponseWriter, r *http.Request) {
 			handler.CheckDupeHandler(database, w, r)
 		})
+		r.Get("/stats", func(w http.ResponseWriter, r *http.Request) {
+			handler.GetStats(database, w, r)
+		})
 		r.Route("/qso", func(r chi.Router) {
 			r.Post("/", func(w http.ResponseWriter, r *http.Request) {
 				handler.CreateQSO(database, w, r)
