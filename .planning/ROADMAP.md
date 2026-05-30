@@ -6,7 +6,7 @@
 
 ---
 
-### Phase 1: Core Logger
+### Phase 1: Core Logger [COMPLETE]
 
 **Goal:** Single operator can log QSOs, see rate/scoring, and export a valid Cabrillo file.
 **Mode:** mvp
@@ -63,6 +63,13 @@
 5. Live scoreboard updates for all clients when any operator logs a QSO
 
 **Requirements:** SYNC-01, SYNC-02, CONF-01, CONF-02, CONF-03
+**Plans:** 4 plans
+
+**Plans:**
+- [ ] 02-01-PLAN.md — Station Configuration: SQLite table → REST API → Svelte UI (CONF-01, CONF-03)
+- [ ] 02-02-PLAN.md — WebSocket Hub: gorilla/websocket hub + broadcast in CreateQSO (SYNC-01, SYNC-02 server)
+- [ ] 02-03-PLAN.md — Frontend WebSocket: client WS listener + Operator identity selector (SYNC-02 client, CONF-02)
+- [ ] 02-04-PLAN.md — Cabrillo Export: reads real station_config instead of hardcoded N0CALL
 
 **Key Deliverables:**
 
