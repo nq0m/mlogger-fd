@@ -1,5 +1,5 @@
 <script>
-	import { createQSO } from '$lib/api.js';
+	import { createQSO, checkDupe } from '$lib/api.js';
 	import { addQso } from '$lib/stores/qso.svelte.js';
 
 	const bands = ['160M', '80M', '40M', '20M', '15M', '10M', '6M', '2M', '70CM'];
@@ -10,15 +10,49 @@
 	let mode = $state('SSB');
 	let recvExchange = $state('');
 	let submitting = $state(false);
+	let dupeWarning = $state('');
 
 	let callsignInput;
+
+	function validateCallsign(call) {
+		if (!call) return 'Callsign required';
+		if (call.length < 2) return 'Callsign too short';
+		return '';
+	}
+
+	async function handleCheckDupe() {
+		if (callsign.length < 2) {
+			dupeWarning = '';
+			return;
+		}
+		try {
+			const result = await checkDupe(callsign, band, mode);
+			if (result.is_dupe) {
+				dupeWarning = 'DUPE: Already worked on this band/mode';
+			} else if (result.similar_calls && result.similar_calls.length > 0) {
+				dupeWarning = 'Similar calls: ' + result.similar_calls.join(', ');
+			} else {
+				dupeWarning = '';
+			}
+		} catch {
+			dupeWarning = '';
+		}
+	}
 
 	async function handleSubmit(e) {
 		e.preventDefault();
 		if (submitting) return;
+
+		const validMsg = validateCallsign(callsign);
+		if (validMsg) {
+			dupeWarning = validMsg;
+		}
+
 		submitting = true;
 
 		try {
+			await handleCheckDupe();
+
 			const result = await createQSO({
 				callsign,
 				band,
@@ -26,9 +60,14 @@
 				recv_exchange: recvExchange
 			});
 			addQso(result);
-			callsign = '';
-			recvExchange = '';
-			callsignInput?.focus();
+			if (result.is_dupe) {
+				dupeWarning = 'Logged as duplicate (0 points)';
+			} else {
+				callsign = '';
+				recvExchange = '';
+				dupeWarning = '';
+				callsignInput?.focus();
+			}
 		} catch (err) {
 			console.error('Submit failed:', err);
 		} finally {
@@ -46,15 +85,21 @@
 
 <form class="qso-form" onsubmit={handleSubmit} onkeydown={handleKeydown}>
 	<div class="form-row">
-		<input
-			bind:this={callsignInput}
-			bind:value={callsign}
-			type="text"
-			placeholder="Callsign"
-			tabindex="1"
-			autofocus
-			class="field-callsign"
-		/>
+		<div class="callsign-group">
+			<input
+				bind:this={callsignInput}
+				bind:value={callsign}
+				type="text"
+				placeholder="Callsign"
+				tabindex="1"
+				autofocus
+				class="field-callsign"
+				onblur={handleCheckDupe}
+			/>
+			{#if dupeWarning}
+				<span class="dupe-warning">{dupeWarning}</span>
+			{/if}
+		</div>
 
 		<select bind:value={band} tabindex="2">
 			{#each bands as b}
@@ -114,6 +159,19 @@
 	.field-callsign {
 		flex: 0 0 140px;
 		min-width: 0;
+	}
+
+	.callsign-group {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+	}
+
+	.dupe-warning {
+		font-size: 11px;
+		color: #cc3300;
+		font-weight: 600;
+		white-space: nowrap;
 	}
 
 	input[type="text"] {

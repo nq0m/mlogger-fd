@@ -20,3 +20,11 @@ export async function fetchQsos(limit = 50, offset = 0) {
 	}
 	return res.json();
 }
+
+export async function checkDupe(callsign, band, mode) {
+	const res = await fetch(`${BASE_URL}/api/check-dupe?callsign=${encodeURIComponent(callsign)}&band=${encodeURIComponent(band)}&mode=${encodeURIComponent(mode)}`);
+	if (!res.ok) {
+		throw new Error('Failed to check dupe');
+	}
+	return res.json();
+}

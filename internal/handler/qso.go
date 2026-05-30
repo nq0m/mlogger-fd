@@ -32,15 +32,27 @@ func CreateQSO(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	}
 
 	now := time.Now().UTC().Format(time.RFC3339)
-	points := qso.CalculatePoints(input.Mode, false)
-	isDupe := 0
+
+	isDupe, similarCalls, err := qso.CheckDupe(db, input.Callsign, input.Band, input.Mode)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": "database error"})
+		return
+	}
+
+	points := qso.CalculatePoints(input.Mode, isDupe)
+	isDupeInt := 0
+	if isDupe {
+		isDupeInt = 1
+	}
 
 	result, err := db.Exec(
 		`INSERT INTO qsos (timestamp, callsign, band, mode, sent_exchange, recv_exchange, operator, is_dupe, points, created_at)
 		 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 		now, input.Callsign, input.Band, input.Mode,
 		input.SentExchange, input.RecvExchange, input.Operator,
-		isDupe, points, now,
+		isDupeInt, points, now,
 	)
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
@@ -55,8 +67,8 @@ func CreateQSO(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"id":            id,
-		"is_dupe":       false,
-		"similar_calls": []string{},
+		"is_dupe":       isDupe,
+		"similar_calls": similarCalls,
 		"points":        points,
 		"timestamp":     now,
 	})

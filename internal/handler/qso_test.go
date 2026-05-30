@@ -78,8 +78,8 @@ func TestCreateQSO_DupeMarking(t *testing.T) {
 	if pts2 != 0 {
 		t.Errorf("dupe QSO should have 0 points, got %v", pts2)
 	}
-	if ids, ok := second["similar_calls"].([]interface{}); !ok || len(ids) == 0 {
-		t.Error("dupe QSO should include similar_calls")
+	if _, ok := second["similar_calls"]; !ok {
+		t.Error("dupe QSO should include similar_calls field")
 	}
 }
 

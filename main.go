@@ -38,6 +38,9 @@ func main() {
 
 	r.Route("/api", func(r chi.Router) {
 		r.Get("/health", handler.HealthCheck)
+		r.Get("/check-dupe", func(w http.ResponseWriter, r *http.Request) {
+			handler.CheckDupeHandler(database, w, r)
+		})
 		r.Route("/qso", func(r chi.Router) {
 			r.Post("/", func(w http.ResponseWriter, r *http.Request) {
 				handler.CreateQSO(database, w, r)
