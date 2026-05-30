@@ -33,14 +33,36 @@ var modeToCabrillo = map[string]string{
 func Generate(db *sql.DB) (string, error) {
 	var buf bytes.Buffer
 
+	// Read station config, falling back to defaults if not available
+	callsign := "N0CALL"
+	class := "1D"
+	section := "NH"
+	power := "LOW"
+
+	err := db.QueryRow("SELECT callsign, class, arrl_section, power_level FROM station_config WHERE id = 1").Scan(&callsign, &class, &section, &power)
+	if err != nil && err != sql.ErrNoRows {
+		// Config table query error — use defaults silently
+		// (table may not exist, permission error, etc.)
+		callsign = "N0CALL"
+		class = "1D"
+		section = "NH"
+		power = "LOW"
+	}
+	// If err == sql.ErrNoRows: defaults already set above
+	// If config returned empty class: fall back to default
+	if class == "" {
+		class = "1D"
+	}
+
 	buf.WriteString("START-OF-LOG: 3.0\n")
 	buf.WriteString("CREATED-BY: FDLogger v1.0\n")
 	buf.WriteString("CONTEST: ARRL-FIELD-DAY\n")
-	buf.WriteString("CALLSIGN: N0CALL\n")
-	buf.WriteString("ARRL-SECTION: NH\n")
+	buf.WriteString(fmt.Sprintf("CALLSIGN: %s\n", callsign))
+	buf.WriteString(fmt.Sprintf("ARRL-SECTION: %s\n", section))
 	buf.WriteString("CATEGORY-OPERATOR: SINGLE-OP\n")
-	buf.WriteString("CATEGORY-POWER: LOW\n")
+	buf.WriteString(fmt.Sprintf("CATEGORY-POWER: %s\n", power))
 	buf.WriteString("CATEGORY-STATION: PORTABLE\n")
+	buf.WriteString(fmt.Sprintf("CATEGORY-CLASS: %s\n", class))
 
 	var rawPoints int
 	var multiplier int
