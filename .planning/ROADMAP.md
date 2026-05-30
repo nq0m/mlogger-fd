@@ -49,10 +49,11 @@
 
 ---
 
-### Phase 2: Multi-User & Real-Time
+### Phase 2: Multi-User & Real-Time [COMPLETE]
 
 **Goal:** Multiple operators on the LAN see each other's QSOs in real-time with shared station configuration.
 **Mode:** mvp
+**Plans:** 5/5 plans complete
 
 **Success Criteria:**
 
@@ -63,13 +64,13 @@
 5. Live scoreboard updates for all clients when any operator logs a QSO
 
 **Requirements:** SYNC-01, SYNC-02, CONF-01, CONF-02, CONF-03
-**Plans:** 4/5 plans executed
+**Plans:** 5/5 plans complete
 
 **Plans:**
 - [x] 02-00-PLAN.md — Wave 0 Test Scaffolding: StationConfig.test.js, ws.test.js, OperatorSelector.test.js stubs
 - [x] 02-01-PLAN.md — Station Configuration: SQLite table → REST API → Svelte UI (CONF-01, CONF-03)
 - [x] 02-02-PLAN.md — WebSocket Hub: gorilla/websocket hub + broadcast in CreateQSO + station config route wiring (SYNC-01, SYNC-02 server)
-- [ ] 02-03-PLAN.md — Frontend WebSocket: client WS listener + Operator identity selector (SYNC-02 client, CONF-02)
+- [x] 02-03-PLAN.md — Frontend WebSocket: client WS listener + Operator identity selector (SYNC-02 client, CONF-02)
 - [x] 02-04-PLAN.md — Cabrillo Export: reads real station_config instead of hardcoded N0CALL
 
 **Key Deliverables:**

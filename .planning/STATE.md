@@ -3,27 +3,27 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 current_phase: 02
-status: in_progress
-last_updated: "2026-05-30T04:21:24Z"
+status: complete
+last_updated: "2026-05-30T04:34:34.884Z"
 progress:
   total_phases: 4
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 10
-  completed_plans: 9
-  percent: 90
+  completed_plans: 10
+  percent: 50
 ---
 
 # Project State: Field Day Logger
 
 **Last updated:** 2026-05-30
-**Overall progress:** 90% (9/10 plans complete, Phase 2 in progress)
+**Overall progress:** 100% (10/10 plans complete, Phase 2 complete)
 
 ## Phase Status
 
 | Phase | Name | Status | Plans | Progress |
 |-------|------|--------|-------|----------|
 | 1 | Core Logger | ✅ Complete | 5/5 | 100% |
-| 2 | Multi-User & Real-Time | ● In Progress | 4/5 | 80% |
+| 2 | Multi-User & Real-Time | ✅ Complete | 5/5 | 100% |
 | 3 | Offline Resilience & Polish | ○ Pending | — | 0% |
 | 4 | Field Day Features & Testing | ○ Pending | — | 0% |
 
@@ -31,8 +31,8 @@ progress:
 
 - **Current milestone:** Building initial release (v1)
 - **Current phase:** 02
-- **Active plan:** 02-04 (Real Station Config in Cabrillo Export) — completed
-- **Active wave:** Wave 2 in progress
+- **Active plan:** 02-03 (WebSocket Client & Operator Identity) — just completed
+- **Active wave:** Wave 3 complete
 
 ## Decisions Made
 
@@ -53,6 +53,9 @@ progress:
 | Silent fallback on config read errors in Cabrillo export | 02-04 | Export must not fail if station_config is missing; defaults ensure Cabrillo is always generated |
 | CATEGORY-CLASS header added to Cabrillo output | 02-04 | Omitted in original hardcoded output; now reflects configured station class for valid ARRL submission |
 | Callsign lowercased in export filename | 02-04 | Follows ARRL convention for case-insensitive filenames (k1abc_field_day.cbr)
+| Object-based $state for wsConnected (wsState.connected) | 02-03 | Svelte 5 forbids exporting $state variables that are reassigned; property mutation on an object wrapper preserves reactivity |
+| ws.js renamed to ws.svelte.js for $state rune compilation | 02-03 | Vitest Svelte plugin only processes .svelte and .svelte.js extensions for $state runes |
+| OperatorSelector saves on every keystroke (oninput) | 02-03 | Ensures persistence even if page crashes before blur event |
 
 ## Notes
 
@@ -73,4 +76,5 @@ See: .planning/PROJECT.md (updated 2026-05-29)
 
 | Phase | Plan | Duration | Notes |
 |-------|------|----------|-------|
+| 02 | 03 | 6 min | 3 tasks (1 TDD), 6 files |
 | 02 | 04 | 3 min | 2 tasks (1 TDD), 3 files |
