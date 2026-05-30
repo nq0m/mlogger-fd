@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/jeremy/mlogger-fd/internal/model"
 	"github.com/jeremy/mlogger-fd/internal/qso"
 )
@@ -77,6 +78,7 @@ func CreateQSO(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 func ListQSOs(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	limitStr := r.URL.Query().Get("limit")
 	offsetStr := r.URL.Query().Get("offset")
+	searchStr := r.URL.Query().Get("search")
 
 	limit := 50
 	offset := 0
@@ -88,11 +90,22 @@ func ListQSOs(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 		offset = o
 	}
 
-	rows, err := db.Query(
-		`SELECT id, timestamp, callsign, band, mode, recv_exchange, is_dupe, points
-		 FROM qsos ORDER BY timestamp DESC LIMIT ? OFFSET ?`,
-		limit, offset,
-	)
+	var rows *sql.Rows
+	var err error
+
+	if searchStr != "" {
+		rows, err = db.Query(
+			`SELECT id, timestamp, callsign, band, mode, recv_exchange, is_dupe, points
+			 FROM qsos WHERE callsign LIKE ? ORDER BY timestamp DESC LIMIT ? OFFSET ?`,
+			searchStr+"%", limit, offset,
+		)
+	} else {
+		rows, err = db.Query(
+			`SELECT id, timestamp, callsign, band, mode, recv_exchange, is_dupe, points
+			 FROM qsos ORDER BY timestamp DESC LIMIT ? OFFSET ?`,
+			limit, offset,
+		)
+	}
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
@@ -129,4 +142,66 @@ func ListQSOs(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(qsos)
+}
+
+func UpdateQSO(db *sql.DB, w http.ResponseWriter, r *http.Request) {
+	idStr := chi.URLParam(r, "id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "invalid QSO ID"})
+		return
+	}
+
+	var input model.CreateQSOInput
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "invalid JSON"})
+		return
+	}
+
+	if msg := model.ValidateRequired(input); msg != "" {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": msg})
+		return
+	}
+
+	if input.SentExchange == "" {
+		input.SentExchange = "1D EMA"
+	}
+
+	points := qso.CalculatePoints(input.Mode, false)
+
+	result, err := db.Exec(
+		`UPDATE qsos SET callsign=?, band=?, mode=?, recv_exchange=?, sent_exchange=?, operator=?, points=? WHERE id=?`,
+		input.Callsign, input.Band, input.Mode, input.RecvExchange,
+		input.SentExchange, input.Operator, points, id,
+	)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": "database error"})
+		return
+	}
+
+	rowsAffected, _ := result.RowsAffected()
+	if rowsAffected == 0 {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(map[string]string{"error": "QSO not found"})
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"id":            id,
+		"callsign":      input.Callsign,
+		"band":          input.Band,
+		"mode":          input.Mode,
+		"recv_exchange": input.RecvExchange,
+		"points":        points,
+	})
 }

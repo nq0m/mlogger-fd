@@ -51,6 +51,9 @@ func main() {
 			r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 				handler.ListQSOs(database, w, r)
 			})
+			r.Put("/{id}", func(w http.ResponseWriter, r *http.Request) {
+				handler.UpdateQSO(database, w, r)
+			})
 		})
 	})
 
