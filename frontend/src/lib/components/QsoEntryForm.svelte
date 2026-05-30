@@ -57,7 +57,8 @@
 				callsign,
 				band,
 				mode,
-				recv_exchange: recvExchange
+				recv_exchange: recvExchange,
+				operator: localStorage.getItem('fdlogger_operator') || ''
 			});
 			addQso(result);
 			fetchStats();
