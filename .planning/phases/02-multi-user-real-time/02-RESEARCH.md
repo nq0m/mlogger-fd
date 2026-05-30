@@ -901,22 +901,22 @@ export function disconnectWebSocket() {
 | A7 | The existing `operator` field in the QSO schema (from Phase 1) is the correct column to send client-side operator identity | Architecture Patterns | LOW — Field already exists in `qsos` table and `CreateQSOInput` struct. Phase 1 sent it optionally; Phase 2 makes it visible in the UI. |
 | A8 | Cabrillo export handler can be modified to read `station_config` table with no breaking changes | Architecture Patterns | LOW — `ExportCabrillo` currently hardcodes "N0CALL". Adding a config lookup is additive. |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Should we require a shared password for WebSocket connections on open WiFi?**
    - What we know: AGENTS.md says "None for trusted LAN; simple shared password if open WiFi." But Phase 2 doesn't differentiate — all clients connect to WebSocket without auth.
    - What's unclear: Whether to implement a password check in the WebSocket upgrade handler now, or defer to later. Since Phase 2 is LAN-only and AGENTS.md treats LAN as "trusted", the current no-auth approach is correct.
-   - Recommendation: No password for Phase 2. If operators use an open WiFi network, the Phase 3/4 shared password mechanism can gate the WebSocket endpoint. Document as known limitation.
+    - Recommendation: RESOLVED: No password for Phase 2. If operators use an open WiFi network, the Phase 3/4 shared password mechanism can gate the WebSocket endpoint. Document as known limitation.
 
 2. **Should the WebSocket broadcast include the full QSO object or just a notification to re-fetch?**
-   - What we know: Broadcasting the full QSO JSON allows instant UI update without an extra HTTP round-trip. A "notification" approach (just `{type: "qso_created", id: 5}`) would require the client to `GET /api/qso` to get the data.
-   - What's unclear: Which is more reliable? Full objects risk stale data if the QSO is edited before the client receives it. Notification approach adds latency.
-   - Recommendation: Broadcast full QSO JSON. This matches Field Day's "< 1 second" real-time requirement. QSO edits during the broadcast window are extremely unlikely. The client can always re-fetch if needed.
+    - What we know: Broadcasting the full QSO JSON allows instant UI update without an extra HTTP round-trip. A "notification" approach (just `{type: "qso_created", id: 5}`) would require the client to `GET /api/qso` to get the data.
+    - What's unclear: Which is more reliable? Full objects risk stale data if the QSO is edited before the client receives it. Notification approach adds latency.
+    - Recommendation: RESOLVED: Broadcast full QSO JSON. This matches Field Day's "< 1 second" real-time requirement. QSO edits during the broadcast window are extremely unlikely. The client can always re-fetch if needed.
 
 3. **Should the Cabrillo export use the stored station config or allow overrides?**
-   - What we know: CONF-01 requires that station config can be set. The Cabrillo export's header metadata (callsign, class, section) should use the stored values.
-   - What's unclear: Whether to add query parameters to override station info per-export (e.g., for testing), or just use the database values always.
-   - Recommendation: Use database values only. No overrides. Keep the one-click export simple per D-06. If operators need different headers, they update the config first.
+    - What we know: CONF-01 requires that station config can be set. The Cabrillo export's header metadata (callsign, class, section) should use the stored values.
+    - What's unclear: Whether to add query parameters to override station info per-export (e.g., for testing), or just use the database values always.
+    - Recommendation: RESOLVED: Use database values only. No overrides. Keep the one-click export simple per D-06. If operators need different headers, they update the config first.
 
 ## Environment Availability
 
