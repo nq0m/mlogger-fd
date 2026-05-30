@@ -10,9 +10,10 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/jeremy/mlogger-fd/internal/model"
 	"github.com/jeremy/mlogger-fd/internal/qso"
+	"github.com/jeremy/mlogger-fd/internal/ws"
 )
 
-func CreateQSO(db *sql.DB, w http.ResponseWriter, r *http.Request) {
+func CreateQSO(db *sql.DB, hub *ws.Hub, w http.ResponseWriter, r *http.Request) {
 	var input model.CreateQSOInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		w.Header().Set("Content-Type", "application/json")

@@ -11,6 +11,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jeremy/mlogger-fd/internal/db"
 	"github.com/jeremy/mlogger-fd/internal/handler"
+	"github.com/jeremy/mlogger-fd/internal/ws"
 )
 
 //go:embed frontend/build/*
@@ -30,6 +31,9 @@ func main() {
 		os.Exit(1)
 	}
 	defer database.Close()
+
+	hub := ws.NewHub()
+	go hub.Run()
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
@@ -55,7 +59,7 @@ func main() {
 		})
 		r.Route("/qso", func(r chi.Router) {
 			r.Post("/", func(w http.ResponseWriter, r *http.Request) {
-				handler.CreateQSO(database, w, r)
+				handler.CreateQSO(database, hub, w, r)
 			})
 			r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 				handler.ListQSOs(database, w, r)
@@ -64,6 +68,11 @@ func main() {
 				handler.UpdateQSO(database, w, r)
 			})
 		})
+	})
+
+	// WebSocket endpoint
+	r.Get("/ws", func(w http.ResponseWriter, r *http.Request) {
+		handler.ServeWS(hub, w, r)
 	})
 
 	r.Get("/*", spaHandler())

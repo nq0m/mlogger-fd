@@ -13,10 +13,11 @@ import (
 
 func setupHandlerTestDB(t *testing.T) *sql.DB {
 	t.Helper()
-	db, err := sql.Open("sqlite", ":memory:?_pragma=journal_mode(WAL)")
+	db, err := sql.Open("sqlite", "file::memory:?_pragma=journal_mode(WAL)&_pragma=busy_timeout(5000)&cache=shared")
 	if err != nil {
 		t.Fatalf("failed to open test DB: %v", err)
 	}
+	db.SetMaxOpenConns(1)
 	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS qsos (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		timestamp TEXT NOT NULL,
@@ -45,7 +46,7 @@ func TestCreateQSO_DupeMarking(t *testing.T) {
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 
-	CreateQSO(db, rec, req)
+	CreateQSO(db, nil, rec, req)
 	if rec.Code != http.StatusCreated {
 		t.Fatalf("expected 201, got %d: %s", rec.Code, rec.Body.String())
 	}
@@ -64,7 +65,7 @@ func TestCreateQSO_DupeMarking(t *testing.T) {
 	req2.Header.Set("Content-Type", "application/json")
 	rec2 := httptest.NewRecorder()
 
-	CreateQSO(db, rec2, req2)
+	CreateQSO(db, nil, rec2, req2)
 	if rec2.Code != http.StatusCreated {
 		t.Fatalf("expected 201, got %d: %s", rec2.Code, rec2.Body.String())
 	}
@@ -91,7 +92,7 @@ func TestCreateQSO_Validation(t *testing.T) {
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 
-	CreateQSO(db, rec, req)
+	CreateQSO(db, nil, rec, req)
 	if rec.Code != http.StatusBadRequest {
 		t.Errorf("expected 400 for missing callsign, got %d", rec.Code)
 	}
