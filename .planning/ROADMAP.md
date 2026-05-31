@@ -67,6 +67,7 @@
 **Plans:** 5/5 plans complete
 
 **Plans:**
+
 - [x] 02-00-PLAN.md — Wave 0 Test Scaffolding: StationConfig.test.js, ws.test.js, OperatorSelector.test.js stubs
 - [x] 02-01-PLAN.md — Station Configuration: SQLite table → REST API → Svelte UI (CONF-01, CONF-03)
 - [x] 02-02-PLAN.md — WebSocket Hub: gorilla/websocket hub + broadcast in CreateQSO + station config route wiring (SYNC-01, SYNC-02 server)
@@ -100,11 +101,21 @@
 
 **Requirements:** SYNC-03, SYNC-04, SYNC-05, SYNC-06, UX-01, UX-02, UX-04
 **Plans:** 4 plans
-
 **Plans:**
+**Wave 1**
+
 - [ ] 03-01-PLAN.md — Offline QSO Logging & Sync: server /api/sync, Dexie.js, offline write path, connection indicator (SYNC-03, SYNC-04, SYNC-05)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
 - [ ] 03-02-PLAN.md — Offline Cache & Dupe: IndexedDB cache population, offline dupe check (SYNC-06)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
 - [ ] 03-03-PLAN.md — Dark Mode: CSS variables, color migration, toggle button (UX-02)
+
+**Wave 4** *(blocked on Wave 3 completion)*
+
 - [ ] 03-04-PLAN.md — Mobile + SW + Debounce: responsive layout, touch targets, service worker, rate limiting (UX-01, UX-04)
 
 **Key Deliverables:**
