@@ -2,6 +2,8 @@
 	import { createQSO, checkDupe } from '$lib/api.js';
 	import { addQso, addQsoOffline, fetchStats } from '$lib/stores/qso.svelte.js';
 	import { refreshQueueCount } from '$lib/sync.svelte.js';
+	import { wsState } from '$lib/ws.svelte.js';
+	import { offlineDupeCheck } from '$lib/db.js';
 
 	const bands = ['160M', '80M', '40M', '20M', '15M', '10M', '6M', '2M', '70CM'];
 	const modes = ['CW', 'SSB', 'FM', 'RTTY', 'FT8', 'FT4', 'PSK31'];
@@ -27,6 +29,17 @@
 			dupeWarning = '';
 			return;
 		}
+
+		if (!wsState.connected) {
+			const result = await offlineDupeCheck(callsign, band, mode);
+			if (result.is_dupe) {
+				dupeWarning = 'DUPE: Already worked on this band/mode';
+			} else {
+				dupeWarning = '';
+			}
+			return;
+		}
+
 		try {
 			const result = await checkDupe(callsign, band, mode);
 			if (result.is_dupe) {

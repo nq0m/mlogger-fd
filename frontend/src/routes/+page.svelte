@@ -7,9 +7,11 @@
 	import OperatorSelector from '$lib/components/OperatorSelector.svelte';
 	import { connectWebSocket, wsState } from '$lib/ws.svelte.js';
 	import { queueState } from '$lib/sync.svelte.js';
+	import { loadCache } from '$lib/stores/qso.svelte.js';
 
 	onMount(() => {
 		connectWebSocket();
+		loadCache();
 	});
 
 	function exportCabrillo() {
