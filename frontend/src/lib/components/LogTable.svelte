@@ -177,8 +177,8 @@
 
 	.search-bar {
 		padding: 8px 16px;
-		background: #f0f0f0;
-		border-bottom: 1px solid #ddd;
+		background: var(--color-bg-alt);
+		border-bottom: 1px solid var(--color-border-strong);
 		position: sticky;
 		top: 0;
 		z-index: 5;
@@ -187,14 +187,14 @@
 	.search-input {
 		padding: 8px 12px;
 		font-size: 14px;
-		border: 2px solid #ccc;
+		border: 2px solid var(--color-border);
 		border-radius: 6px;
 		width: 200px;
 		outline: none;
 	}
 
 	.search-input:focus {
-		border-color: #2266cc;
+		border-color: var(--color-accent);
 	}
 
 	.log-table {
@@ -206,23 +206,23 @@
 	.log-table th {
 		position: sticky;
 		top: 48px;
-		background: #e8e8e8;
+		background: var(--color-bg-alt);
 		padding: 8px 12px;
 		text-align: left;
 		font-weight: 600;
 		font-size: 13px;
 		text-transform: uppercase;
-		color: #555;
-		border-bottom: 2px solid #ccc;
+		color: var(--color-text-secondary);
+		border-bottom: 2px solid var(--color-border);
 	}
 
 	.log-table td {
 		padding: 8px 12px;
-		border-bottom: 1px solid #eee;
+		border-bottom: 1px solid var(--color-border);
 	}
 
 	.log-table tbody tr:nth-child(even) {
-		background: #fafafa;
+		background: var(--color-bg);
 	}
 
 	.qso-row {
@@ -231,22 +231,22 @@
 	}
 
 	.qso-row:hover {
-		background: #e8f0fe !important;
+		background: var(--color-highlight) !important;
 	}
 
 	.edit-row {
-		background: #fffde7 !important;
+		background: var(--color-highlight) !important;
 		border-left: 3px solid #f0c040;
 	}
 
 	.edit-row:hover {
-		background: #fffde7 !important;
+		background: var(--color-highlight) !important;
 	}
 
 	.edit-input, .edit-select {
 		padding: 4px 8px;
 		font-size: 14px;
-		border: 2px solid #2266cc;
+		border: 2px solid var(--color-accent);
 		border-radius: 4px;
 		width: 100%;
 		min-width: 80px;
@@ -262,27 +262,28 @@
 		font-weight: 600;
 		border: none;
 		border-radius: 4px;
-		background: #1a7a1a;
-		color: #fff;
+		background: var(--color-success);
+		color: var(--color-surface);
 		cursor: pointer;
 		margin-right: 4px;
 	}
 
 	.btn-save:hover {
-		background: #156315;
+		background: var(--color-success);
+		filter: brightness(0.85);
 	}
 
 	.btn-cancel {
 		padding: 4px 12px;
 		font-size: 13px;
-		border: 1px solid #ccc;
+		border: 1px solid var(--color-border);
 		border-radius: 4px;
-		background: #fff;
+		background: var(--color-surface);
 		cursor: pointer;
 	}
 
 	.btn-cancel:hover {
-		background: #f0f0f0;
+		background: var(--color-bg-alt);
 	}
 
 	.col-time {
@@ -302,7 +303,7 @@
 	.empty-state {
 		padding: 40px;
 		text-align: center;
-		color: #888;
+		color: var(--color-text-muted);
 		font-style: italic;
 	}
 
@@ -314,15 +315,15 @@
 	.load-more button {
 		padding: 8px 24px;
 		font-size: 14px;
-		border: 2px solid #2266cc;
+		border: 2px solid var(--color-accent);
 		border-radius: 6px;
-		background: #fff;
-		color: #2266cc;
+		background: var(--color-surface);
+		color: var(--color-accent);
 		font-weight: 600;
 		cursor: pointer;
 	}
 
 	.load-more button:hover {
-		background: #e8f0fe;
+		background: var(--color-highlight);
 	}
 </style>

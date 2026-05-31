@@ -30,7 +30,7 @@
 	.operator-selector input {
 		width: 140px;
 		padding: 4px 8px;
-		border: 1px solid #ccc;
+		border: 1px solid var(--color-border);
 		border-radius: 4px;
 		font-size: 14px;
 	}

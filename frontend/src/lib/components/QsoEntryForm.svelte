@@ -164,8 +164,8 @@
 <style>
 	.qso-form {
 		padding: 12px 16px;
-		background: #fff;
-		border-bottom: 2px solid #ddd;
+		background: var(--color-surface);
+		border-bottom: 2px solid var(--color-border-strong);
 		position: sticky;
 		top: 0;
 		z-index: 10;
@@ -181,14 +181,14 @@
 	input, select {
 		padding: 10px 12px;
 		font-size: 16px;
-		border: 2px solid #ccc;
+		border: 2px solid var(--color-border);
 		border-radius: 6px;
-		background: #fff;
+		background: var(--color-surface);
 		outline: none;
 	}
 
 	input:focus, select:focus {
-		border-color: #2266cc;
+		border-color: var(--color-accent);
 	}
 
 	.field-callsign {
@@ -204,7 +204,7 @@
 
 	.dupe-warning {
 		font-size: 11px;
-		color: #cc3300;
+		color: var(--color-danger);
 		font-weight: 600;
 		white-space: nowrap;
 	}
@@ -224,14 +224,14 @@
 		font-weight: 600;
 		border: none;
 		border-radius: 6px;
-		background: #2266cc;
-		color: #fff;
+		background: var(--color-accent);
+		color: var(--color-surface);
 		cursor: pointer;
 		white-space: nowrap;
 	}
 
 	button:hover:not(:disabled) {
-		background: #1a52a3;
+		background: var(--color-primary);
 	}
 
 	button:disabled {

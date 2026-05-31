@@ -73,8 +73,8 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 6px 16px;
-		background: #1a3a6b;
-		color: #fff;
+		background: var(--color-primary);
+		color: var(--color-surface);
 		gap: 12px;
 	}
 
@@ -109,11 +109,11 @@
 	}
 
 	.ws-status.online {
-		color: #1a7a1a;
+		color: var(--color-success);
 	}
 
 	.ws-status.offline {
-		color: #cc3300;
+		color: var(--color-danger);
 	}
 
 	.queue-count {
@@ -122,17 +122,17 @@
 		border-radius: 4px;
 		font-weight: 600;
 		background: rgba(255,255,255,0.2);
-		color: #fff;
+		color: var(--color-surface);
 	}
 
 	.export-btn {
 		padding: 6px 16px;
 		font-size: 14px;
 		font-weight: 600;
-		border: 2px solid #fff;
+		border: 2px solid var(--color-surface);
 		border-radius: 6px;
 		background: transparent;
-		color: #fff;
+		color: var(--color-surface);
 		cursor: pointer;
 	}
 
@@ -144,7 +144,7 @@
 		background: none;
 		border: 1px solid rgba(255,255,255,0.3);
 		border-radius: 4px;
-		color: #fff;
+		color: var(--color-surface);
 		font-size: 16px;
 		cursor: pointer;
 		padding: 2px 6px;

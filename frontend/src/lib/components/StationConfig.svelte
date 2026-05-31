@@ -128,10 +128,10 @@
 		padding: 4px 12px;
 		font-size: 14px;
 		font-weight: 600;
-		border: 2px solid #fff;
+		border: 2px solid var(--color-surface);
 		border-radius: 6px;
 		background: transparent;
-		color: #fff;
+		color: var(--color-surface);
 		cursor: pointer;
 		white-space: nowrap;
 	}
@@ -148,8 +148,8 @@
 		position: absolute;
 		top: 44px;
 		right: 8px;
-		background: #fff;
-		border: 1px solid #c4d7f2;
+		background: var(--color-surface);
+		border: 1px solid var(--color-border-light);
 		border-radius: 8px;
 		padding: 16px;
 		box-shadow: 0 4px 16px rgba(0,0,0,0.12);
@@ -172,22 +172,22 @@
 	.field label {
 		font-size: 13px;
 		font-weight: 600;
-		color: #555;
+		color: var(--color-text-secondary);
 	}
 
 	.field input, .field select {
 		padding: 6px 10px;
 		font-size: 16px;
-		border: 1px solid #c4d7f2;
+		border: 1px solid var(--color-border-light);
 		border-radius: 6px;
-		background: #f8fafd;
-		color: #1a3a6b;
+		background: var(--color-bg);
+		color: var(--color-primary);
 	}
 
 	.field input:focus, .field select:focus {
 		outline: none;
-		border-color: #1a3a6b;
-		box-shadow: 0 0 0 2px rgba(26,58,107,0.2);
+		border-color: var(--color-primary);
+		box-shadow: 0 0 0 2px var(--color-border-light);
 	}
 
 	.config-actions {
@@ -203,18 +203,19 @@
 		font-weight: 600;
 		border: none;
 		border-radius: 6px;
-		background: #1a3a6b;
-		color: #fff;
+		background: var(--color-primary);
+		color: var(--color-surface);
 		cursor: pointer;
 	}
 
 	.save-btn:hover {
-		background: #2a4f8f;
+		background: var(--color-primary);
+		filter: brightness(1.15);
 	}
 
 	.saved-msg {
 		font-size: 14px;
 		font-weight: 600;
-		color: #1a7a1a;
+		color: var(--color-success);
 	}
 </style>

@@ -77,8 +77,8 @@
 		gap: 16px;
 		align-items: center;
 		padding: 8px 16px;
-		background: #e8f0fe;
-		border-bottom: 1px solid #c4d7f2;
+		background: var(--color-highlight);
+		border-bottom: 1px solid var(--color-border-light);
 		font-size: 14px;
 		flex-wrap: wrap;
 	}
@@ -90,7 +90,7 @@
 	}
 
 	.stat-label {
-		color: #555;
+		color: var(--color-text-secondary);
 		font-size: 11px;
 		text-transform: uppercase;
 		font-weight: 600;
@@ -99,40 +99,40 @@
 	.stat-value {
 		font-size: 20px;
 		font-weight: 700;
-		color: #1a3a6b;
+		color: var(--color-primary);
 	}
 
 	.stat-unit {
 		font-size: 11px;
-		color: #777;
+		color: var(--color-text-secondary);
 	}
 
 	.rate .stat-value {
-		color: #cc3300;
+		color: var(--color-danger);
 	}
 
 	.score .stat-value {
-		color: #1a7a1a;
+		color: var(--color-success);
 	}
 
 	.breakdown-toggle {
 		margin-left: auto;
 		padding: 4px 10px;
 		font-size: 12px;
-		border: 1px solid #aaa;
+		border: 1px solid var(--color-text-muted);
 		border-radius: 4px;
-		background: #fff;
+		background: var(--color-surface);
 		cursor: pointer;
 	}
 
 	.breakdown-toggle:hover {
-		background: #f0f0f0;
+		background: var(--color-bg-alt);
 	}
 
 	.breakdown-panel {
 		padding: 8px 16px;
-		background: #f8f8f8;
-		border-bottom: 1px solid #ddd;
+		background: var(--color-bg);
+		border-bottom: 1px solid var(--color-border-strong);
 	}
 
 	.breakdown-table {
@@ -144,7 +144,7 @@
 	.breakdown-table th {
 		text-align: left;
 		padding: 4px 8px;
-		color: #555;
+		color: var(--color-text-secondary);
 		font-size: 11px;
 		text-transform: uppercase;
 	}
@@ -155,7 +155,7 @@
 
 	.empty-breakdown {
 		padding: 8px;
-		color: #888;
+		color: var(--color-text-muted);
 		font-style: italic;
 		font-size: 13px;
 	}
