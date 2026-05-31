@@ -33,7 +33,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **SYNC-03**: Each client buffers QSOs locally via IndexedDB when server is unreachable
 - [x] **SYNC-04**: Buffered QSOs auto-sync to server when connection is restored
 - [x] **SYNC-05**: Connection status indicator shows online/offline state in the UI
-- [ ] **SYNC-06**: Dupe checking works against locally cached QSOs when offline
+- [x] **SYNC-06**: Dupe checking works against locally cached QSOs when offline
 
 ### Station Configuration
 
@@ -116,7 +116,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SYNC-03 | Phase 3 | Complete |
 | SYNC-04 | Phase 3 | Complete |
 | SYNC-05 | Phase 3 | Complete |
-| SYNC-06 | Phase 3 | Pending |
+| SYNC-06 | Phase 3 | Complete |
 | CONF-01 | Phase 2 | Complete |
 | CONF-02 | Phase 2 | Complete |
 | CONF-03 | Phase 2 | Complete |

@@ -100,7 +100,7 @@
 6. App loads from cache when server is unavailable (Service Worker)
 
 **Requirements:** SYNC-03, SYNC-04, SYNC-05, SYNC-06, UX-01, UX-02, UX-04
-**Plans:** 1/4 plans executed
+**Plans:** 2/4 plans executed
 **Plans:**
 **Wave 1**
 
@@ -108,7 +108,7 @@
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 03-02-PLAN.md — Offline Cache & Dupe: IndexedDB cache population, offline dupe check (SYNC-06)
+- [x] 03-02-PLAN.md — Offline Cache & Dupe: IndexedDB cache population, offline dupe check (SYNC-06)
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
