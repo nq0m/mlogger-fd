@@ -30,9 +30,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **SYNC-01**: Multiple operators on LAN can log to the same server database simultaneously
 - [x] **SYNC-02**: New QSOs broadcast via WebSocket to all connected clients in real-time
-- [ ] **SYNC-03**: Each client buffers QSOs locally via IndexedDB when server is unreachable
-- [ ] **SYNC-04**: Buffered QSOs auto-sync to server when connection is restored
-- [ ] **SYNC-05**: Connection status indicator shows online/offline state in the UI
+- [x] **SYNC-03**: Each client buffers QSOs locally via IndexedDB when server is unreachable
+- [x] **SYNC-04**: Buffered QSOs auto-sync to server when connection is restored
+- [x] **SYNC-05**: Connection status indicator shows online/offline state in the UI
 - [ ] **SYNC-06**: Dupe checking works against locally cached QSOs when offline
 
 ### Station Configuration
@@ -113,9 +113,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SCOR-03 | Phase 1 | Pending |
 | SYNC-01 | Phase 2 | Complete |
 | SYNC-02 | Phase 2 | Complete |
-| SYNC-03 | Phase 3 | Pending |
-| SYNC-04 | Phase 3 | Pending |
-| SYNC-05 | Phase 3 | Pending |
+| SYNC-03 | Phase 3 | Complete |
+| SYNC-04 | Phase 3 | Complete |
+| SYNC-05 | Phase 3 | Complete |
 | SYNC-06 | Phase 3 | Pending |
 | CONF-01 | Phase 2 | Complete |
 | CONF-02 | Phase 2 | Complete |

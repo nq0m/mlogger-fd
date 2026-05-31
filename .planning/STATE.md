@@ -2,21 +2,21 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 3
-status: ready_to_plan
-last_updated: "2026-05-31T00:03:23.455Z"
+current_phase: 03
+status: in_progress
+last_updated: "2026-05-30T20:00:00Z"
 progress:
   total_phases: 4
   completed_phases: 2
   total_plans: 14
-  completed_plans: 10
-  percent: 50
+  completed_plans: 11
+  percent: 79
 ---
 
 # Project State: Field Day Logger
 
 **Last updated:** 2026-05-30
-**Overall progress:** 100% (10/10 plans complete, Phase 2 complete)
+**Overall progress:** 79% (11/14 plans complete, Phase 3 in progress)
 
 ## Phase Status
 
@@ -24,15 +24,15 @@ progress:
 |-------|------|--------|-------|----------|
 | 1 | Core Logger | ✅ Complete | 5/5 | 100% |
 | 2 | Multi-User & Real-Time | ✅ Complete | 5/5 | 100% |
-| 3 | Offline Resilience & Polish | ○ Pending | — | 0% |
+| 3 | Offline Resilience & Polish | ◆ In Progress | 1/4 | 25% |
 | 4 | Field Day Features & Testing | ○ Pending | — | 0% |
 
 ## Active Context
 
 - **Current milestone:** Building initial release (v1)
-- **Current phase:** 3
-- **Active plan:** 02-03 (WebSocket Client & Operator Identity) — just completed
-- **Active wave:** Wave 3 complete
+- **Current phase:** 03
+- **Active plan:** 03-01 (Core Offline QSO Loop) — completed
+- **Active wave:** Wave 1 complete
 
 ## Decisions Made
 
@@ -56,6 +56,11 @@ progress:
 | Object-based $state for wsConnected (wsState.connected) | 02-03 | Svelte 5 forbids exporting $state variables that are reassigned; property mutation on an object wrapper preserves reactivity |
 | ws.js renamed to ws.svelte.js for $state rune compilation | 02-03 | Vitest Svelte plugin only processes .svelte and .svelte.js extensions for $state runes |
 | OperatorSelector saves on every keystroke (oninput) | 02-03 | Ensures persistence even if page crashes before blur event |
+| Object-based $state for queue/syncing (syncState) | 03-01 | Svelte 5 forbids reassigning exported $state primitives; property mutation on object preserves reactivity |
+| Sync trigger via $effect in sync.svelte.js | 03-01 | Avoids circular import between ws.svelte.js ↔ sync.svelte.js |
+| Dynamic import for db.js in qso.svelte.js | 03-01 | Breaks circular dependency chain while keeping runtime lazy-loading |
+| 1-second debounce on QSO submit | 03-01 | Prevents accidental double-taps from creating duplicate offline QSOs |
+| ON CONFLICT(client_id) DO NOTHING for idempotent sync | 03-01 | Replayed sync batches cannot create duplicate server QSOs |
 
 ## Notes
 
@@ -70,7 +75,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-29)
 
 **Core value:** Operators can log QSOs even when the network goes down, with all data syncing automatically when reconnected.
-**Current focus:** Phase 3 — offline resilience & polish
+**Current focus:** Phase 03 — offline-resilience-polish
 
 ## Performance Metrics
 
@@ -78,3 +83,4 @@ See: .planning/PROJECT.md (updated 2026-05-29)
 |-------|------|----------|-------|
 | 02 | 03 | 6 min | 3 tasks (1 TDD), 6 files |
 | 02 | 04 | 3 min | 2 tasks (1 TDD), 3 files |
+| 03 | 01 | 15 min | 3 tasks, 12 files |

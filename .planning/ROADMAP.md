@@ -100,11 +100,11 @@
 6. App loads from cache when server is unavailable (Service Worker)
 
 **Requirements:** SYNC-03, SYNC-04, SYNC-05, SYNC-06, UX-01, UX-02, UX-04
-**Plans:** 4 plans
+**Plans:** 1/4 plans executed
 **Plans:**
 **Wave 1**
 
-- [ ] 03-01-PLAN.md — Offline QSO Logging & Sync: server /api/sync, Dexie.js, offline write path, connection indicator (SYNC-03, SYNC-04, SYNC-05)
+- [x] 03-01-PLAN.md — Offline QSO Logging & Sync: server /api/sync, Dexie.js, offline write path, connection indicator (SYNC-03, SYNC-04, SYNC-05)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
