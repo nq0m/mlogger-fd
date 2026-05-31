@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS qsos (
     mode TEXT NOT NULL,
     sent_exchange TEXT NOT NULL,
     recv_exchange TEXT NOT NULL,
+    client_id TEXT UNIQUE,
     operator TEXT,
     is_dupe INTEGER NOT NULL DEFAULT 0,
     points INTEGER NOT NULL DEFAULT 0,

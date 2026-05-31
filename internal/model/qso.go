@@ -2,6 +2,7 @@ package model
 
 type QSO struct {
 	ID            int64  `json:"id"`
+	ClientID      string `json:"client_id,omitempty"`
 	Timestamp     string `json:"timestamp"`
 	Callsign      string `json:"callsign"`
 	Band          string `json:"band"`
@@ -15,6 +16,7 @@ type QSO struct {
 }
 
 type CreateQSOInput struct {
+	ClientID     string `json:"client_id,omitempty"`
 	Callsign     string `json:"callsign"`
 	Band         string `json:"band"`
 	Mode         string `json:"mode"`

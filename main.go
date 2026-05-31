@@ -57,6 +57,9 @@ func main() {
 		r.Put("/station-config", func(w http.ResponseWriter, r *http.Request) {
 			handler.PutStationConfig(database, w, r)
 		})
+		r.Post("/sync", func(w http.ResponseWriter, r *http.Request) {
+			handler.SyncQSOs(database, hub, w, r)
+		})
 		r.Route("/qso", func(r chi.Router) {
 			r.Post("/", func(w http.ResponseWriter, r *http.Request) {
 				handler.CreateQSO(database, hub, w, r)

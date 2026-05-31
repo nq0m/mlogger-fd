@@ -50,6 +50,19 @@ export async function searchQsos(query, limit = 50, offset = 0) {
 	return res.json();
 }
 
+export async function syncBatch(qsos) {
+	const res = await fetch(`${BASE_URL}/api/sync`, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ qsos })
+	});
+	const json = await res.json();
+	if (!res.ok) {
+		throw new Error(json.error || 'Failed to sync QSOs');
+	}
+	return json;
+}
+
 export async function getStationConfig() {
 	const res = await fetch(`${BASE_URL}/api/station-config`);
 	if (!res.ok) {
