@@ -48,10 +48,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### User Experience
 
-- [ ] **UX-01**: Mobile-responsive layout with large touch targets (works on phones and tablets)
+- [x] **UX-01**: Mobile-responsive layout with large touch targets (works on phones and tablets)
 - [x] **UX-02**: Dark mode theme for night operation in dimly lit tents
 - [ ] **UX-03**: Audio alerts via Web Audio API for new QSO confirmation and dupe warning
-- [ ] **UX-04**: Service Worker provides offline fallback (app shell cached, works without server)
+- [x] **UX-04**: Service Worker provides offline fallback (app shell cached, works without server)
 
 ## v2 Requirements
 
@@ -122,10 +122,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CONF-03 | Phase 2 | Complete |
 | EXPR-01 | Phase 1 | Pending |
 | EXPR-02 | Phase 1 | Pending |
-| UX-01 | Phase 3 | Pending |
+| UX-01 | Phase 3 | Complete |
 | UX-02 | Phase 3 | Complete |
 | UX-03 | Phase 4 | Pending |
-| UX-04 | Phase 3 | Pending |
+| UX-04 | Phase 3 | Complete |
 
 **Coverage:**
 - v1 requirements: 24 total
