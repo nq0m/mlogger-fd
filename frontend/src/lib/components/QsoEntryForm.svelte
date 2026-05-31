@@ -1,6 +1,7 @@
 <script>
 	import { createQSO, checkDupe } from '$lib/api.js';
-	import { addQso, fetchStats } from '$lib/stores/qso.svelte.js';
+	import { addQso, addQsoOffline, fetchStats } from '$lib/stores/qso.svelte.js';
+	import { refreshQueueCount } from '$lib/sync.svelte.js';
 
 	const bands = ['160M', '80M', '40M', '20M', '15M', '10M', '6M', '2M', '70CM'];
 	const modes = ['CW', 'SSB', 'FM', 'RTTY', 'FT8', 'FT4', 'PSK31'];
@@ -13,6 +14,7 @@
 	let dupeWarning = $state('');
 
 	let callsignInput;
+	let lastSubmitTime = 0;
 
 	function validateCallsign(call) {
 		if (!call) return 'Callsign required';
@@ -42,10 +44,13 @@
 	async function handleSubmit(e) {
 		e.preventDefault();
 		if (submitting) return;
+		if (Date.now() - lastSubmitTime < 1000) return;
+		lastSubmitTime = Date.now();
 
 		const validMsg = validateCallsign(callsign);
 		if (validMsg) {
 			dupeWarning = validMsg;
+			return;
 		}
 
 		submitting = true;
@@ -71,7 +76,22 @@
 				callsignInput?.focus();
 			}
 		} catch (err) {
-			console.error('Submit failed:', err);
+			if (err instanceof TypeError || (err.message && err.message.includes('fetch'))) {
+				await addQsoOffline({
+					callsign,
+					band,
+					mode,
+					recv_exchange: recvExchange,
+					operator: localStorage.getItem('fdlogger_operator') || ''
+				});
+				refreshQueueCount();
+				callsign = '';
+				recvExchange = '';
+				dupeWarning = '';
+				callsignInput?.focus();
+			} else {
+				console.error('Submit failed:', err);
+			}
 		} finally {
 			submitting = false;
 		}

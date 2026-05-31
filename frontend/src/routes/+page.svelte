@@ -6,6 +6,7 @@
 	import StationConfig from '$lib/components/StationConfig.svelte';
 	import OperatorSelector from '$lib/components/OperatorSelector.svelte';
 	import { connectWebSocket, wsState } from '$lib/ws.svelte.js';
+	import { queueState } from '$lib/sync.svelte.js';
 
 	onMount(() => {
 		connectWebSocket();
@@ -22,6 +23,9 @@
 		<span class="ws-status" class:online={wsState.connected} class:offline={!wsState.connected}>
 			{wsState.connected ? '● Live' : '● Disconnected'}
 		</span>
+		{#if queueState.queueLength > 0}
+			<span class="queue-count">{queueState.syncing ? 'Syncing...' : `${queueState.queueLength} queued`}</span>
+		{/if}
 	</div>
 	<div class="header-center">
 		<OperatorSelector />
@@ -82,6 +86,15 @@
 
 	.ws-status.offline {
 		color: #cc3300;
+	}
+
+	.queue-count {
+		font-size: 11px;
+		padding: 2px 8px;
+		border-radius: 4px;
+		font-weight: 600;
+		background: rgba(255,255,255,0.2);
+		color: #fff;
 	}
 
 	.export-btn {

@@ -22,6 +22,31 @@ export function addQso(qso) {
 	qsos.unshift(qso);
 }
 
+export async function addQsoOffline(qsoData) {
+	const client_id = crypto.randomUUID();
+	const { enqueueQso } = await import('$lib/db.js');
+
+	qsoData.client_id = client_id;
+	await enqueueQso(qsoData);
+
+	const qso = {
+		id: client_id,
+		client_id,
+		timestamp: new Date().toISOString(),
+		callsign: qsoData.callsign,
+		band: qsoData.band,
+		mode: qsoData.mode,
+		recv_exchange: qsoData.recv_exchange,
+		operator: qsoData.operator || '',
+		is_dupe: false,
+		points: 0,
+		_offline: true
+	};
+
+	addQso(qso);
+	return qso;
+}
+
 export async function fetchStats() {
 	try {
 		const res = await fetch('/api/stats');
