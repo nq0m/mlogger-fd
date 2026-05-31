@@ -1,6 +1,7 @@
 // WebSocket client module for real-time multi-user QSO sync
 // Implements: SYNC-02 (client-side WebSocket listener for real-time QSO updates)
 import { qsos, fetchStats } from '$lib/stores/qso.svelte.js';
+import { addToCache } from '$lib/db.js';
 
 // Use object-based $state since Svelte 5 forbids reassigning exported $state variables
 export const wsState = $state({ connected: false });
@@ -47,18 +48,30 @@ export function connectWebSocket() {
 					recentIds.add(data.id);
 					pruneRecentIds();
 
-					qsos.unshift({
-						id: data.id,
-						timestamp: data.timestamp,
-						callsign: data.callsign,
-						band: data.band,
-						mode: data.mode,
-						recv_exchange: data.recv_exchange,
-						operator: data.operator,
-						is_dupe: data.is_dupe,
-						points: data.points,
-					});
-					// Refresh stats to keep scoreboard current
+				qsos.unshift({
+					id: data.id,
+					timestamp: data.timestamp,
+					callsign: data.callsign,
+					band: data.band,
+					mode: data.mode,
+					recv_exchange: data.recv_exchange,
+					operator: data.operator,
+					is_dupe: data.is_dupe,
+					points: data.points,
+				});
+				addToCache({
+					client_id: data.client_id || '',
+					id: data.id,
+					timestamp: data.timestamp,
+					callsign: data.callsign,
+					band: data.band,
+					mode: data.mode,
+					recv_exchange: data.recv_exchange,
+					operator: data.operator,
+					is_dupe: data.is_dupe,
+					points: data.points,
+				});
+				// Refresh stats to keep scoreboard current
 					fetchStats();
 				}
 			} catch (e) {

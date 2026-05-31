@@ -47,6 +47,20 @@ export async function addQsoOffline(qsoData) {
 	return qso;
 }
 
+export async function loadCache() {
+	const { populateCache } = await import('$lib/db.js');
+	try {
+		const res = await fetch('/api/qso?limit=9999');
+		if (!res.ok) return;
+		const data = await res.json();
+		await populateCache(data);
+	} catch {
+		// server unreachable at load time — cache will populate on next load or via WS events
+	}
+}
+
+loadCache();
+
 export async function fetchStats() {
 	try {
 		const res = await fetch('/api/stats');
