@@ -9,7 +9,30 @@
 	import { queueState } from '$lib/sync.svelte.js';
 	import { loadCache } from '$lib/stores/qso.svelte.js';
 
+	let theme = $state('light');
+
+	function initTheme() {
+		const stored = localStorage.getItem('fdlogger_theme');
+		if (stored === 'light' || stored === 'dark') {
+			theme = stored;
+		} else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+			theme = 'dark';
+		}
+		applyTheme();
+	}
+
+	function toggleTheme() {
+		theme = theme === 'light' ? 'dark' : 'light';
+		localStorage.setItem('fdlogger_theme', theme);
+		applyTheme();
+	}
+
+	function applyTheme() {
+		document.body.setAttribute('data-theme', theme);
+	}
+
 	onMount(() => {
+		initTheme();
 		connectWebSocket();
 		loadCache();
 	});
@@ -21,6 +44,9 @@
 
 <div class="header-bar">
 	<div class="header-left">
+		<button class="theme-toggle" onclick={toggleTheme} aria-label="Toggle dark mode">
+			{theme === 'light' ? '☀' : '☾'}
+		</button>
 		<h1 class="title">FD Logger</h1>
 		<span class="ws-status" class:online={wsState.connected} class:offline={!wsState.connected}>
 			{wsState.connected ? '● Live' : '● Disconnected'}
@@ -111,6 +137,22 @@
 	}
 
 	.export-btn:hover {
+		background: rgba(255,255,255,0.15);
+	}
+
+	.theme-toggle {
+		background: none;
+		border: 1px solid rgba(255,255,255,0.3);
+		border-radius: 4px;
+		color: #fff;
+		font-size: 16px;
+		cursor: pointer;
+		padding: 2px 6px;
+		min-width: 36px;
+		min-height: 36px;
+	}
+
+	.theme-toggle:hover {
 		background: rgba(255,255,255,0.15);
 	}
 </style>
