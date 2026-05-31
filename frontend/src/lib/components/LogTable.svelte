@@ -191,6 +191,7 @@
 		border-radius: 6px;
 		width: 200px;
 		outline: none;
+		min-height: 48px;
 	}
 
 	.search-input:focus {
@@ -325,5 +326,31 @@
 
 	.load-more button:hover {
 		background: var(--color-highlight);
+	}
+
+	@media (max-width: 500px) {
+		.log-table {
+			font-size: 13px;
+		}
+		.log-table th:nth-child(1),
+		.log-table td:nth-child(1) {
+			display: none;
+		}
+		.edit-row td:nth-child(1) {
+			display: none;
+		}
+		.search-input {
+			width: 100%;
+			font-size: 16px;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.log-table {
+			font-size: 14px;
+		}
+		.log-table th, .log-table td {
+			padding: 6px 8px;
+		}
 	}
 </style>

@@ -134,6 +134,7 @@
 		background: transparent;
 		color: var(--color-surface);
 		cursor: pointer;
+		min-height: 48px;
 	}
 
 	.export-btn:hover {
@@ -148,11 +149,35 @@
 		font-size: 16px;
 		cursor: pointer;
 		padding: 2px 6px;
-		min-width: 36px;
-		min-height: 36px;
+		min-width: 48px;
+		min-height: 48px;
 	}
 
 	.theme-toggle:hover {
 		background: rgba(255,255,255,0.15);
+	}
+
+	@media (max-width: 768px) {
+		.header-bar {
+			flex-wrap: wrap;
+			padding: 6px 10px;
+			gap: 6px;
+		}
+		.header-left, .header-center, .header-right {
+			flex: 1 1 auto;
+		}
+		.title {
+			font-size: 16px;
+		}
+	}
+
+	@media (max-width: 500px) {
+		.header-bar {
+			padding: 4px 8px;
+		}
+		.header-right {
+			flex-basis: 100%;
+			justify-content: flex-end;
+		}
 	}
 </style>

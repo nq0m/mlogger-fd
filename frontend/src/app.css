@@ -51,3 +51,8 @@ body {
 	flex-direction: column;
 	overflow: hidden;
 }
+
+button, input, select, textarea, [role="button"], [tabindex] {
+	min-height: 48px;
+	min-width: 48px;
+}

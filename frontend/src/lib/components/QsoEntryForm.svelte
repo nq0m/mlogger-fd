@@ -185,6 +185,7 @@
 		border-radius: 6px;
 		background: var(--color-surface);
 		outline: none;
+		min-height: 48px;
 	}
 
 	input:focus, select:focus {
@@ -228,6 +229,8 @@
 		color: var(--color-surface);
 		cursor: pointer;
 		white-space: nowrap;
+		min-height: 48px;
+		min-width: 48px;
 	}
 
 	button:hover:not(:disabled) {
@@ -243,5 +246,35 @@
 		font-weight: 400;
 		font-size: 12px;
 		opacity: 0.8;
+	}
+
+	@media (max-width: 500px) {
+		.form-row {
+			flex-direction: column;
+			gap: 6px;
+		}
+		.field-callsign {
+			flex: 1 1 100%;
+			width: 100%;
+		}
+		input[type="text"] {
+			flex: 1 1 100%;
+			width: 100%;
+		}
+		select {
+			width: 100%;
+		}
+		button {
+			width: 100%;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.qso-form {
+			padding: 8px 12px;
+		}
+		.form-row {
+			gap: 6px;
+		}
 	}
 </style>
