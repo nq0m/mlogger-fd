@@ -144,7 +144,22 @@
 4. System survives a 2-hour continuous logging simulation with 3+ clients
 5. Tested in a real outdoor setup (park, tent) with at least 2 operators
 
-**Requirements:** UX-03
+**Requirements:** UX-03, BON-01, BON-02, BKUP-01
+**Plans:** 4 plans
+
+**Plans:**
+**Wave 1**
+
+- [ ] 04-01-PLAN.md — Bonus Backend & API: schema, model, handler, routes (BON-01)
+- [ ] 04-03-PLAN.md — Audio Alerts: Web Audio utility, mute toggle, QSO entry triggers (UX-03)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 04-02-PLAN.md — Bonus UI & Scoring: BonusTracker component, header, score/Cabrillo integration (BON-01, BON-02)
+
+**Wave 3** *(blocked on Wave 1 and Wave 2 completion)*
+
+- [ ] 04-04-PLAN.md — Backup & Testing: one-click backup, simulation test, field test checklist (BKUP-01)
 
 **Key Deliverables:**
 
@@ -175,10 +190,10 @@ Phases are sequential. Each builds on the previous.
 
 | Phase | Requirements | Status |
 |-------|-------------|--------|
-| 1 | QSO-01–QSO-04, DUPE-01–DUPE-03, SCOR-01–SCOR-03, EXPR-01–EXPR-02 (12) | Pending |
-| 2 | SYNC-01–SYNC-02, CONF-01–CONF-03 (5) | Pending |
-| 3 | SYNC-03–SYNC-06, UX-01–UX-02, UX-04 (7) | Pending |
-| 4 | UX-03 (1) | Pending |
+| 1 | QSO-01–QSO-04, DUPE-01–DUPE-03, SCOR-01–SCOR-03, EXPR-01–EXPR-02 (12) | Complete |
+| 2 | SYNC-01–SYNC-02, CONF-01–CONF-03 (5) | Complete |
+| 3 | SYNC-03–SYNC-06, UX-01–UX-02, UX-04 (7) | Complete |
+| 4 | UX-03, BON-01, BON-02, BKUP-01 (4) | Planned |
 
 24/24 v1 requirements mapped. 0 unmapped.
 
