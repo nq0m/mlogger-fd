@@ -8,26 +8,51 @@ A lightweight, mobile-friendly, multi-user web-based logging application purpose
 
 Operators can log QSOs even when the network goes down, with all data syncing automatically when reconnected. The log must never be lost.
 
+## Current State
+
+**Shipped:** v1.0.0 on 2026-06-05 — 4 phases, 19 plans, ~20,500 LOC (Go + SvelteKit + JS)
+
+**Tech stack:** Go backend (chi router, gorilla/websocket) + SvelteKit SPA frontend + SQLite (WAL mode). Single-binary deploy on Raspberry Pi 4 or Linux laptop. LAN-only, no internet dependency.
+
+**What's built:**
+- Full QSO logging with keyboard shortcuts, dupe detection, and inline editing
+- Real-time multi-user sync via WebSocket hub (channel-based broadcast)
+- Station configuration (callsign, class, section, power) with UI form
+- Operator identity per client session (localStorage)
+- Offline resilience: Dexie.js IndexedDB buffer, batch POST /api/sync, auto-reconnect
+- ARRL Field Day Cabrillo v3.0 export with config-driven headers
+- Live scoreboard with rate meter, band/mode breakdown, and bonus points
+- Bonus tracker: 18-item ARRL 2026 bonus list with localStorage persistence
+- Web Audio API beeps for QSO confirmation and dupe warnings
+- Dark mode CSS theme with 14 custom properties, no hardcoded colors
+- Mobile-responsive layout (48px touch targets, 500px/768px breakpoints)
+- Service Worker with versioned app shell caching
+- One-click SQLite database backup
+- Full test suites: Go (race-clean), vitest + jsdom, multi-client integration simulation
+
 ## Requirements
 
 ### Validated
 
-(None yet — ship to validate)
+- ✓ Quick-entry QSO log form with keyboard shortcuts — v1.0.0
+- ✓ Real-time dupe checking (band+mode) with inline warning — v1.0.0
+- ✓ Live rate meter (QSOs/hour, peak rate, running total) — v1.0.0
+- ✓ Multi-user LAN support (2-6 operators, shared database) — v1.0.0
+- ✓ Offline resilience (local IndexedDB buffer, sync on reconnect) — v1.0.0
+- ✓ One-click Cabrillo export in valid ARRL Field Day format — v1.0.0
+- ✓ Live score display (raw points, multiplier, bonus, estimated score) — v1.0.0
+- ✓ Band/mode breakdown panel — v1.0.0
+- ✓ Station configuration (class, section, power, transmitter count) — v1.0.0
+- ✓ Dupe warning against locally cached QSOs when offline — v1.0.0
+- ✓ Mobile-responsive UI with large touch targets — v1.0.0
+- ✓ Dark mode theme — v1.0.0
+- ✓ Audio alerts for QSO confirmation and dupe warning — v1.0.0
+- ✓ Bonus points tracker (claim/unclaim FD bonuses) — v1.0.0
+- ✓ One-click database backup (SQLite file export) — v1.0.0
 
 ### Active
 
-- [ ] Quick-entry QSO log form (callsign, band, mode, exchange) with keyboard shortcuts
-- [ ] Real-time dupe checking (band+mode) with inline warning
-- [ ] Live rate meter (QSOs/hour, peak rate, running total)
-- [ ] Multi-user LAN support (2–6 operators, shared database)
-- [ ] Offline resilience (local IndexedDB buffer, sync on reconnect)
-- [ ] One-click Cabrillo export in valid ARRL Field Day format
-- [ ] Live score display (raw points, multiplier, bonus, estimated score)
-- [ ] Band/mode breakdown panel
-- [ ] Station configuration (class, section, power, transmitter count)
-- [ ] Dupe warning against locally cached QSOs when offline
-- [ ] Mobile-responsive UI with large touch targets
-- [ ] Dark mode theme
+_(Ready for next milestone planning)_
 
 ### Out of Scope
 
@@ -45,7 +70,7 @@ Operators can log QSOs even when the network goes down, with all data syncing au
 
 **Domain:** Amateur radio contest logging for ARRL Field Day, an annual 27-hour event on the fourth full weekend of June. Stations operate portable (tents, parks) on generator/battery/solar power with minimal infrastructure.
 
-**Technical environment:** A Raspberry Pi 4 or Linux laptop acting as a LAN server. 2–6 client devices (laptops, tablets, phones) connect via WiFi router. Internet is unreliable or absent during the event.
+**Technical environment:** A Raspberry Pi 4 or Linux laptop acting as a LAN server. 2-6 client devices (laptops, tablets, phones) connect via WiFi router. Internet is unreliable or absent during the event.
 
 **Key Field Day rules:**
 - Exchange format: station class + ARRL section (e.g., "2A NH")
@@ -70,13 +95,13 @@ Operators can log QSOs even when the network goes down, with all data syncing au
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Go backend (chi + gorilla/websocket) | Single binary, low memory, easy deploy on RPi | — Pending |
-| SvelteKit frontend | Small bundles (~8KB), reactive, excellent offline support | — Pending |
-| SQLite with WAL mode | No server process, perfect for single-server LAN deployment | — Pending |
-| Offline-first architecture (IndexedDB + Dexie.js) | QSOs written locally first, synced to server when connected | — Pending |
-| SPA + WebSockets for real-time | Instant dupe check requires local state; WebSockets for live multi-user updates | — Pending |
-| Svelte stores for state management | Lightweight reactive state sufficient for ~3000 QSOs max | — Pending |
-| No auth for LAN use | Everyone in the tent is trusted | — Pending |
+| Go backend (chi + gorilla/websocket) | Single binary, low memory, easy deploy on RPi | ✓ Good — compiles to ~15MB binary, runs on RPi 4 |
+| SvelteKit frontend | Small bundles (~8KB), reactive, excellent offline support | ✓ Good — Svelte 5 runes work well, Vitest + jsdom viable |
+| SQLite with WAL mode | No server process, perfect for single-server LAN deployment | ✓ Good — zero-config, concurrent reads work with WAL |
+| Offline-first architecture (IndexedDB + Dexie.js) | QSOs written locally first, synced to server when connected | ✓ Good — Dexie.js v4 solid, sync dedup via client_id |
+| SPA + WebSockets for real-time | Instant dupe check requires local state; WebSockets for live multi-user updates | ✓ Good — gorilla/websocket hub handles broadcast cleanly |
+| Svelte stores for state management | Lightweight reactive state sufficient for ~3000 QSOs max | ✓ Good — $state runes + exported objects for reactivity |
+| No auth for LAN use | Everyone in the tent is trusted | ✓ Good — zero friction for operators |
 
 ## Evolution
 
@@ -96,4 +121,5 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-29 after initialization*
+
+_Last updated: 2026-06-05 after v1.0.0 milestone_
