@@ -6,6 +6,7 @@
 	import StationConfig from '$lib/components/StationConfig.svelte';
 	import OperatorSelector from '$lib/components/OperatorSelector.svelte';
 	import { connectWebSocket, wsState } from '$lib/ws.svelte.js';
+	import { audioState, toggleMute } from '$lib/audio.svelte.js';
 	import { queueState } from '$lib/sync.svelte.js';
 	import { loadCache } from '$lib/stores/qso.svelte.js';
 
@@ -46,6 +47,9 @@
 	<div class="header-left">
 		<button class="theme-toggle" onclick={toggleTheme} aria-label="Toggle dark mode">
 			{theme === 'light' ? '☀' : '☾'}
+		</button>
+		<button class="theme-toggle" onclick={toggleMute} aria-label="Toggle audio">
+			{audioState.muted ? '🔇' : '🔊'}
 		</button>
 		<h1 class="title">FD Logger</h1>
 		<span class="ws-status" class:online={wsState.connected} class:offline={!wsState.connected}>
