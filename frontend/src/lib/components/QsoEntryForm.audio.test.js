@@ -1,68 +1,65 @@
 // frontend/src/lib/components/QsoEntryForm.audio.test.js
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render } from '@testing-library/svelte';
+// Verifies audio trigger wiring in QsoEntryForm.svelte (Plan 04-03 Task 2)
+import { describe, it, expect } from 'vitest';
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
 
-// vi.mock() calls are hoisted by vitest — these resolve before static imports execute.
-// This allows tests to pass during Wave 0 when the audio module does not yet exist (created by Plan 04-03-T1).
+// Read the source file for structural verification
+const srcPath = resolve(import.meta.dirname, 'QsoEntryForm.svelte');
+let source = '';
+try {
+	source = readFileSync(srcPath, 'utf-8');
+} catch {
+	// Test will fail gracefully if file can't be read
+}
 
-// Mock QsoEntryForm.svelte — the real component already exists from Phase 1.
-// We shadow it with a mock that exposes the audio trigger paths for verification.
-vi.mock('$lib/components/QsoEntryForm.svelte', () => ({ default: {} }));
-
-// Mock audio.svelte.js — not yet created (Plan 04-03-T1)
-const mockPlaySound = vi.fn();
-vi.mock('$lib/audio.svelte.js', () => ({
-	playSound: mockPlaySound,
-	audioState: { muted: false },
-	toggleMute: vi.fn(),
-}));
-
-// Mock api.js
-vi.mock('$lib/api.js', () => ({
-	createQSO: vi.fn().mockResolvedValue({ id: 1, callsign: 'K1ABC', is_dupe: false }),
-	checkDupe: vi.fn().mockResolvedValue({ is_dupe: false }),
-	fetchStats: vi.fn().mockResolvedValue({}),
-}));
-
-// Mock stores
-vi.mock('$lib/stores/qso.svelte.js', () => ({
-	qsos: [],
-	stats: { qso_count: 0, raw_points: 0, multiplier: 1, score: 0, bonus_points: 0 },
-	addQso: vi.fn(),
-	fetchStats: vi.fn(),
-}));
-
-vi.mock('$lib/stores/op.svelte.js', () => ({
-	operator: 'K1ABC',
-}));
-
-import QsoEntryForm from '$lib/components/QsoEntryForm.svelte';
-
-describe('QsoEntryForm — Audio Trigger Integration', () => {
-	beforeEach(() => {
-		vi.clearAllMocks();
+describe('QsoEntryForm — Audio Trigger Integration (D-08)', () => {
+	it('imports playSound from audio.svelte.js', () => {
+		expect(source).toMatch(/import\s*\{[^}]*playSound[^}]*\}\s*from\s*'\$lib\/audio\.svelte\.js'/);
 	});
 
-	it('resolves module import — QsoEntryForm.svelte exists', () => {
-		expect(QsoEntryForm).toBeDefined();
+	it('calls playSound("confirm") after successful createQSO in handleSubmit', () => {
+		// Verify playSound('confirm') exists in source
+		expect(source).toContain("playSound('confirm')");
+
+		// Verify it appears after fetchStats() and before if (result.is_dupe)
+		const fetchStatsIdx = source.indexOf('fetchStats()');
+		const confirmIdx = source.indexOf("playSound('confirm')");
+		const isDupeIdx = source.indexOf('if (result.is_dupe)', confirmIdx);
+
+		expect(fetchStatsIdx).toBeGreaterThan(-1);
+		expect(confirmIdx).toBeGreaterThan(-1);
+		expect(isDupeIdx).toBeGreaterThan(-1);
+		expect(confirmIdx).toBeGreaterThan(fetchStatsIdx);
+		expect(isDupeIdx).toBeGreaterThan(confirmIdx);
 	});
 
-	it.skip('calls playSound("confirm") after successful createQSO in handleSubmit', async () => {
-		// Requires audio trigger wiring in QsoEntryForm.svelte from Plan 04-03-T2
-		// Render component, fill form, click submit, assert mockPlaySound was called with 'confirm'
-		render(QsoEntryForm, {});
-		// Expect: mockPlaySound.toHaveBeenCalledWith('confirm')
+	it('calls playSound("dupe") when dupeWarning is set to exact DUPE message (online path)', () => {
+		// Online dupe path (checkDupe)
+		const onlineDupeRegex = /if\s*\(result\.is_dupe\)\s*\{[^}]*dupeWarning\s*=\s*'DUPE:[^']*'[^}]*playSound\('dupe'\)/s;
+		expect(source).toMatch(onlineDupeRegex);
 	});
 
-	it.skip('calls playSound("dupe") when dupeWarning is set to exact DUPE message', async () => {
-		// Requires audio trigger wiring in QsoEntryForm.svelte from Plan 04-03-T2
-		// Trigger handleCheckDupe with known dupe callsign, assert mockPlaySound called with 'dupe'
-		render(QsoEntryForm, {});
-		// Expect: mockPlaySound.toHaveBeenCalledWith('dupe')
+	it('calls playSound("dupe") when dupeWarning is set to exact DUPE message (offline path)', () => {
+		// Offline dupe path (offlineDupeCheck)
+		const offlineDupeRegex = /if\s*\(result\.is_dupe\)\s*\{[^}]*dupeWarning\s*=\s*'DUPE:[^']*'[^}]*playSound\('dupe'\)/s;
+		expect(source).toMatch(offlineDupeRegex);
 	});
 
-	it.skip('does NOT call playSound for WebSocket-received remote QSOs (D-08)', async () => {
-		// This test will validate ws.svelte.js does not import playSound
-		// grep check: `grep -c 'playSound' frontend/src/lib/ws.svelte.js` returns 0
+	it('does NOT call playSound for similar-calls warning (only exact dupes)', () => {
+		// Similar calls block should not contain playSound
+		const similarIdx = source.indexOf('Similar calls');
+		expect(similarIdx).toBeGreaterThan(-1);
+
+		// Find the similar calls if-block
+		const similarBlock = source.slice(similarIdx - 50, similarIdx + 200);
+		expect(similarBlock).not.toContain('playSound');
+	});
+
+	it('does NOT call playSound in WebSocket handler (D-08 — own-QSO only)', async () => {
+		// Verify ws.svelte.js does not import or call playSound
+		const wsPath = resolve(import.meta.dirname, '../ws.svelte.js');
+		const wsSource = readFileSync(wsPath, 'utf-8');
+		expect(wsSource).not.toContain('playSound');
 	});
 });

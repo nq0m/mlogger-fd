@@ -4,6 +4,7 @@
 	import { refreshQueueCount } from '$lib/sync.svelte.js';
 	import { wsState } from '$lib/ws.svelte.js';
 	import { offlineDupeCheck } from '$lib/db.js';
+	import { playSound } from '$lib/audio.svelte.js';
 
 	const bands = ['160M', '80M', '40M', '20M', '15M', '10M', '6M', '2M', '70CM'];
 	const modes = ['CW', 'SSB', 'FM', 'RTTY', 'FT8', 'FT4', 'PSK31'];
@@ -34,6 +35,7 @@
 			const result = await offlineDupeCheck(callsign, band, mode);
 			if (result.is_dupe) {
 				dupeWarning = 'DUPE: Already worked on this band/mode';
+				playSound('dupe');
 			} else {
 				dupeWarning = '';
 			}
@@ -44,6 +46,7 @@
 			const result = await checkDupe(callsign, band, mode);
 			if (result.is_dupe) {
 				dupeWarning = 'DUPE: Already worked on this band/mode';
+				playSound('dupe');
 			} else if (result.similar_calls && result.similar_calls.length > 0) {
 				dupeWarning = 'Similar calls: ' + result.similar_calls.join(', ');
 			} else {
@@ -80,6 +83,7 @@
 			});
 			addQso(result);
 			fetchStats();
+			playSound('confirm');
 			if (result.is_dupe) {
 				dupeWarning = 'Logged as duplicate (0 points)';
 			} else {
