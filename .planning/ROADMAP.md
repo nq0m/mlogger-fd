@@ -145,7 +145,7 @@
 5. Tested in a real outdoor setup (park, tent) with at least 2 operators
 
 **Requirements:** UX-03, BON-01, BON-02, BKUP-01
-**Plans:** 3/5 plans executed
+**Plans:** 4/5 plans executed
 
 **Plans:**
 **Wave 0**
@@ -159,7 +159,7 @@
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 04-02-PLAN.md — Bonus UI & Scoring: BonusTracker component, header, score/Cabrillo integration (BON-01, BON-02)
+- [x] 04-02-PLAN.md — Bonus UI & Scoring: BonusTracker component, header, score/Cabrillo integration (BON-01, BON-02)
 
 **Wave 3** *(blocked on Wave 1 and Wave 2 completion)*
 
