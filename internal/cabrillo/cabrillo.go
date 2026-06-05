@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"strings"
 	"time"
+
+	"github.com/jeremy/mlogger-fd/internal/model"
 )
 
 var bandToFreq = map[string]string{
@@ -75,8 +77,117 @@ func Generate(db *sql.DB) (string, error) {
 	if multiplier < 1 {
 		multiplier = 1
 	}
-	score := rawPoints * multiplier
+
+	var bonusPoints int
+	if err := db.QueryRow(`SELECT COALESCE(SUM(CASE
+		WHEN bonus_id = 'emergency_power' THEN claimed * count * 100
+		WHEN bonus_id = 'message_handling' THEN claimed * MIN(count, 10) * 10
+		WHEN bonus_id = 'youth_participation' THEN claimed * MIN(count, 5) * 20
+		WHEN bonus_id = 'gota_bonus' THEN claimed * (count * 5 + CASE WHEN count >= 10 THEN 100 ELSE 0 END)
+		WHEN bonus_id = 'web_submission' THEN claimed * 50
+		WHEN bonus_id = 'safety_officer' THEN claimed * 100
+		WHEN bonus_id = 'site_responsibilities' THEN claimed * 50
+		ELSE claimed * 100
+	END), 0) FROM bonus_claims`).Scan(&bonusPoints); err != nil {
+		bonusPoints = 0
+	}
+
+	score := (rawPoints * multiplier) + bonusPoints
 	buf.WriteString(fmt.Sprintf("CLAIMED-SCORE: %d\n", score))
+
+	// Add SOAPBOX lines for claimed bonuses
+	bonusRows, err := db.Query("SELECT bonus_id, claimed, count FROM bonus_claims WHERE claimed = 1 ORDER BY bonus_id")
+	if err == nil {
+		defer bonusRows.Close()
+		for bonusRows.Next() {
+			var bid string
+			var claimed, count int
+			if err := bonusRows.Scan(&bid, &claimed, &count); err != nil {
+				continue
+			}
+			// Look up bonus name and compute points
+			var name string
+			var pts int
+			switch bid {
+			case "emergency_power":
+				name = "100% Emergency Power"
+				pts = count * 100
+			case "media_publicity":
+				name = "Media Publicity"
+				pts = 100
+			case "public_location":
+				name = "Public Location"
+				pts = 100
+			case "public_info_table":
+				name = "Public Information Table"
+				pts = 100
+			case "message_to_sm":
+				name = "Message to Section Manager"
+				pts = 100
+			case "message_handling":
+				name = "Message Handling"
+				capped := count
+				if capped > 10 {
+					capped = 10
+				}
+				pts = capped * 10
+			case "satellite_qso":
+				name = "Satellite QSO"
+				pts = 100
+			case "alternate_power":
+				name = "Alternate Power"
+				pts = 100
+			case "w1aw_bulletin":
+				name = "W1AW Bulletin"
+				pts = 100
+			case "educational_activity":
+				name = "Educational Activity"
+				pts = 100
+			case "official_visit":
+				name = "Elected Official Visit"
+				pts = 100
+			case "agency_visit":
+				name = "Agency Representative Visit"
+				pts = 100
+			case "gota_bonus":
+				name = "GOTA Station Bonus"
+				pts = count*5
+				if count >= 10 {
+					pts += 100
+				}
+			case "web_submission":
+				name = "Web Submission"
+				pts = 50
+			case "youth_participation":
+				name = "Youth Participation"
+				capped := count
+				if capped > 5 {
+					capped = 5
+				}
+				pts = capped * 20
+			case "social_media":
+				name = "Social Media Promotion"
+				pts = 100
+			case "safety_officer":
+				name = "Safety Officer"
+				pts = 100
+			case "site_responsibilities":
+				name = "Site Responsibilities"
+				pts = 50
+			default:
+				// Look up from model.DefaultBonuses
+				for i := range model.DefaultBonuses {
+					if model.DefaultBonuses[i].ID == bid {
+						name = model.DefaultBonuses[i].Name
+						pts = model.DefaultBonuses[i].Points
+						break
+					}
+				}
+			}
+			buf.WriteString(fmt.Sprintf("SOAPBOX: Bonus: %s = %d pts\n", name, pts))
+		}
+		buf.WriteString(fmt.Sprintf("SOAPBOX: Total Bonus Points = %d\n", bonusPoints))
+	}
 
 	rows, err := db.Query(`SELECT timestamp, callsign, band, mode, sent_exchange, recv_exchange, is_dupe
 		FROM qsos ORDER BY timestamp ASC`)

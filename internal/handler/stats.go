@@ -42,7 +42,21 @@ func GetStats(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 		multiplier = 1
 	}
 
-	score := rawPoints * multiplier
+	var bonusPoints int
+	if err := db.QueryRow(`SELECT COALESCE(SUM(CASE
+		WHEN bonus_id = 'emergency_power' THEN claimed * count * 100
+		WHEN bonus_id = 'message_handling' THEN claimed * MIN(count, 10) * 10
+		WHEN bonus_id = 'youth_participation' THEN claimed * MIN(count, 5) * 20
+		WHEN bonus_id = 'gota_bonus' THEN claimed * (count * 5 + CASE WHEN count >= 10 THEN 100 ELSE 0 END)
+		WHEN bonus_id = 'web_submission' THEN claimed * 50
+		WHEN bonus_id = 'safety_officer' THEN claimed * 100
+		WHEN bonus_id = 'site_responsibilities' THEN claimed * 50
+		ELSE claimed * 100
+	END), 0) FROM bonus_claims`).Scan(&bonusPoints); err != nil {
+		bonusPoints = 0
+	}
+
+	score := (rawPoints * multiplier) + bonusPoints
 
 	rows, err := db.Query("SELECT band, mode, COUNT(*) FROM qsos WHERE is_dupe = 0 GROUP BY band, mode ORDER BY band, mode")
 	if err != nil {
@@ -64,12 +78,13 @@ func GetStats(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"total":      total,
-		"raw_points": rawPoints,
-		"multiplier": multiplier,
-		"score":      score,
-		"rate_10min": rate10min,
-		"rate_1hr":   rate1hr,
-		"breakdown":  breakdown,
+		"total":       total,
+		"raw_points":  rawPoints,
+		"bonus_points": bonusPoints,
+		"multiplier":  multiplier,
+		"score":       score,
+		"rate_10min":  rate10min,
+		"rate_1hr":    rate1hr,
+		"breakdown":   breakdown,
 	})
 }

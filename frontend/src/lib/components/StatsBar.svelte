@@ -31,6 +31,10 @@
 		<span class="stat-label">Pts</span>
 		<span class="stat-value">{stats.raw_points}</span>
 	</div>
+	<div class="stat bonus">
+		<span class="stat-label">Bonus</span>
+		<span class="stat-value">{stats.bonus_points || 0}</span>
+	</div>
 	<div class="stat">
 		<span class="stat-label">Mult</span>
 		<span class="stat-value">{stats.multiplier}</span>
@@ -113,6 +117,14 @@
 
 	.score .stat-value {
 		color: var(--color-success);
+	}
+
+	.bonus .stat-value {
+		color: #cc8800;
+	}
+
+	:global([data-theme='dark']) .bonus .stat-value {
+		color: #ffaa00;
 	}
 
 	.breakdown-toggle {
