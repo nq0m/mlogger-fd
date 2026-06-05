@@ -145,7 +145,7 @@
 5. Tested in a real outdoor setup (park, tent) with at least 2 operators
 
 **Requirements:** UX-03, BON-01, BON-02, BKUP-01
-**Plans:** 4/5 plans executed
+**Plans:** 5/5 plans complete
 
 **Plans:**
 **Wave 0**
@@ -163,7 +163,7 @@
 
 **Wave 3** *(blocked on Wave 1 and Wave 2 completion)*
 
-- [ ] 04-04-PLAN.md — Backup & Testing: one-click backup, simulation test, field test checklist (BKUP-01)
+- [x] 04-04-PLAN.md — Backup & Testing: one-click backup, simulation test, field test checklist (BKUP-01)
 
 **Key Deliverables:**
 
