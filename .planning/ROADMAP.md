@@ -145,9 +145,13 @@
 5. Tested in a real outdoor setup (park, tent) with at least 2 operators
 
 **Requirements:** UX-03, BON-01, BON-02, BKUP-01
-**Plans:** 4 plans
+**Plans:** 5 plans (1 Wave 0 + 4 execution)
 
 **Plans:**
+**Wave 0**
+
+- [ ] 04-00-PLAN.md — Test Scaffolding: vitest test stubs for BonusTracker, audio, and QsoEntryForm audio triggers (BON-01, UX-03)
+
 **Wave 1**
 
 - [ ] 04-01-PLAN.md — Bonus Backend & API: schema, model, handler, routes (BON-01)

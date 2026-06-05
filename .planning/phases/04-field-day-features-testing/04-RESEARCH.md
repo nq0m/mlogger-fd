@@ -861,27 +861,27 @@ buf.WriteString(fmt.Sprintf("CLAIMED-SCORE: %d\n", score))
 | A7 | Browser supports Web Audio API (all modern browsers per ASSUMED compatibility) | Audio Feedback | Very old Android browsers or Opera Mini would not play sounds |
 | A8 | User provides audio files — application does not generate or bundle them | Audio Feedback | If user forgets to provide audio files, `fetch()` returns 404 and playback silently fails (caught by try/catch) |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Score formula: pre-multiplier or post-multiplier bonus addition?**
    - What we know: CONTEXT.md says `(raw_points + bonus_points) * multiplier`. ARRL rules section 7.3 says "bonus points will be added to the score, after the multiplier is applied."
    - What's unclear: User intent — did they mean post-multiplier or was the formula a simplification?
-   - Recommendation: Flag in discuss phase. Implement post-multiplier (ARRL-correct) and note the discrepancy. If user wants pre-multiplier, it's a one-line change.
+   - RESOLVED: Implement post-multiplier (ARRL-correct). The scoring integration (Plan 04-02-T2) uses `score = (rawPoints * multiplier) + bonusPoints` per ARRL rules section 7.3. The CONTEXT.md formula was a simplification; ARRL rules take precedence for submission compliance.
 
 2. **Audio file format preference?**
    - What we know: D-06 says `.wav` or `.mp3`. WAV is simpler (no codec support issues), universally supported.
    - What's unclear: Does the user have audio files already? Do they care about file size (WAV is larger)?
-   - Recommendation: Default to `.wav` (no codec decoding issues). Mention that `.mp3` works but requires browser codec support.
+   - RESOLVED: Default to `.wav` (no codec decoding issues). The application expects `frontend/static/audio/confirm.wav` and `frontend/static/audio/dupe.wav`. These are user-provided per D-06 — the app does not generate or bundle them. If files are missing, `fetch()` returns 404 and `playSound()` catches the error silently.
 
 3. **Simulation test duration: wall-clock or QSO-count-based?**
    - What we know: D-13 says "2-hour simulation." Actual 2 hours in CI is impractical.
    - What's unclear: Should the test actually run for 2 hours of wall-clock time, or should it run quickly and simulate 2 hours worth of QSO activity (200+ QSOs)?
-   - Recommendation: Use QSO-count-based (200+ QSOs, 3 clients) running in ~60 seconds. This validates integrity without CI timeout. Note that a true 2-hour soak test would be done during the manual field test (D-14).
+   - RESOLVED: Use QSO-count-based (200+ QSOs, 3 clients) running in ~60 seconds wall clock. This validates core data integrity without CI timeout. The D-14 field test provides the real-world endurance validation.
 
 4. **Bonus points tracking: should the bonus list auto-filter by station class?**
    - What we know: Some bonuses only apply to certain classes (e.g., safety_officer only for Class A).
    - What's unclear: Should the UI hide/show bonuses based on configured station class? Or show all and let the operator figure it out?
-   - Recommendation: Show all bonuses, but dim/grey-out those not applicable to the configured class. This avoids data loss if class changes and is more transparent.
+   - RESOLVED: Show all 18 bonuses regardless of configured station class. The operator decides which to claim. This is simpler and avoids bonus data loss if the station class is changed. The operator is responsible for claiming only applicable bonuses per ARRL rules.
 
 ## Environment Availability
 
