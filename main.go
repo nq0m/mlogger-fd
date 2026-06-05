@@ -57,6 +57,12 @@ func main() {
 		r.Put("/station-config", func(w http.ResponseWriter, r *http.Request) {
 			handler.PutStationConfig(database, w, r)
 		})
+		r.Get("/bonuses", func(w http.ResponseWriter, r *http.Request) {
+			handler.GetBonuses(database, w, r)
+		})
+		r.Put("/bonuses", func(w http.ResponseWriter, r *http.Request) {
+			handler.PutBonuses(database, w, r)
+		})
 		r.Post("/sync", func(w http.ResponseWriter, r *http.Request) {
 			handler.SyncQSOs(database, hub, w, r)
 		})
