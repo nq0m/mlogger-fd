@@ -26,3 +26,10 @@ CREATE TABLE IF NOT EXISTS station_config (
     power_level TEXT NOT NULL DEFAULT 'LOW',
     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
+
+CREATE TABLE IF NOT EXISTS bonus_claims (
+    bonus_id TEXT PRIMARY KEY,
+    claimed INTEGER NOT NULL DEFAULT 0,
+    count INTEGER NOT NULL DEFAULT 0,
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
