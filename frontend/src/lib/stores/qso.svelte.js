@@ -3,12 +3,16 @@ export const qsos = $state([]);
 export const stats = $state({
 	total: 0,
 	raw_points: 0,
+	bonus_points: 0,
 	multiplier: 1,
 	score: 0,
 	rate_10min: 0,
 	rate_1hr: 0,
 	breakdown: {}
 });
+
+// Bonus claims: { bonus_id: { claimed: bool, count: int } }
+export const bonusClaims = $state({});
 
 export const stationConfig = $state({
 	callsign: 'N0CALL',

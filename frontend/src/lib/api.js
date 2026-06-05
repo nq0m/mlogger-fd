@@ -83,3 +83,24 @@ export async function putStationConfig(data) {
 	}
 	return json;
 }
+
+export async function getBonuses() {
+	const res = await fetch(`${BASE_URL}/api/bonuses`);
+	if (!res.ok) {
+		throw new Error('Failed to fetch bonuses');
+	}
+	return res.json();
+}
+
+export async function putBonuses(data) {
+	const res = await fetch(`${BASE_URL}/api/bonuses`, {
+		method: 'PUT',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(data)
+	});
+	const json = await res.json();
+	if (!res.ok) {
+		throw new Error(json.error || 'Failed to save bonuses');
+	}
+	return json;
+}

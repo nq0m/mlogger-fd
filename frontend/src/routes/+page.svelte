@@ -4,6 +4,7 @@
 	import StatsBar from '$lib/components/StatsBar.svelte';
 	import LogTable from '$lib/components/LogTable.svelte';
 	import StationConfig from '$lib/components/StationConfig.svelte';
+	import BonusTracker from '$lib/components/BonusTracker.svelte';
 	import OperatorSelector from '$lib/components/OperatorSelector.svelte';
 	import { connectWebSocket, wsState } from '$lib/ws.svelte.js';
 	import { audioState, toggleMute } from '$lib/audio.svelte.js';
@@ -11,6 +12,8 @@
 	import { loadCache } from '$lib/stores/qso.svelte.js';
 
 	let theme = $state('light');
+	let backupToast = $state(false);
+	let backupTimer;
 
 	function initTheme() {
 		const stored = localStorage.getItem('fdlogger_theme');
@@ -64,8 +67,12 @@
 	</div>
 	<div class="header-right">
 		<StationConfig />
+		<BonusTracker />
 		<button class="export-btn" onclick={exportCabrillo}>Export Cabrillo</button>
 	</div>
+	{#if backupToast}
+		<span class="saved-msg" style="position:absolute; top:44px; right: 8px; z-index: 101; background: var(--color-surface); padding: 4px 12px; border-radius: 6px; font-size: 14px; font-weight: 600; color: var(--color-success);">Backup downloaded</span>
+	{/if}
 </div>
 <QsoEntryForm />
 <StatsBar />
