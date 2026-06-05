@@ -33,6 +33,15 @@ func setupStatsTestDB(t *testing.T) *sql.DB {
 	if err != nil {
 		t.Fatalf("failed to create table: %v", err)
 	}
+	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS bonus_claims (
+		bonus_id TEXT PRIMARY KEY,
+		claimed INTEGER NOT NULL DEFAULT 0,
+		count INTEGER NOT NULL DEFAULT 0,
+		updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+	)`)
+	if err != nil {
+		t.Fatalf("failed to create bonus_claims table: %v", err)
+	}
 	t.Cleanup(func() { db.Close() })
 	return db
 }
@@ -182,5 +191,126 @@ func TestGetStats_Breakdown(t *testing.T) {
 	ssb40, _ := breakdown["40M_SSB"].(float64)
 	if ssb40 != 1 {
 		t.Errorf("expected 40M_SSB=1, got %v", ssb40)
+	}
+}
+
+func TestGetStats_BonusPointsField(t *testing.T) {
+	db := setupStatsTestDB(t)
+
+	req := httptest.NewRequest("GET", "/api/stats", nil)
+	rec := httptest.NewRecorder()
+	GetStats(db, rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", rec.Code)
+	}
+
+	var stats map[string]interface{}
+	if err := json.Unmarshal(rec.Body.Bytes(), &stats); err != nil {
+		t.Fatalf("failed to parse JSON: %v", err)
+	}
+
+	bonusPoints, ok := stats["bonus_points"]
+	if !ok {
+		t.Fatal("expected bonus_points field in stats response")
+	}
+	bp, _ := bonusPoints.(float64)
+	if bp != 0 {
+		t.Errorf("expected bonus_points=0 with no claims, got %v", bp)
+	}
+}
+
+func TestGetStats_BonusPointsWithClaims(t *testing.T) {
+	db := setupStatsTestDB(t)
+
+	// Insert some claimed bonuses
+	db.Exec(`INSERT OR REPLACE INTO bonus_claims (bonus_id, claimed, count, updated_at)
+		VALUES ('media_publicity', 1, 0, datetime('now'))`)
+	db.Exec(`INSERT OR REPLACE INTO bonus_claims (bonus_id, claimed, count, updated_at)
+		VALUES ('emergency_power', 1, 3, datetime('now'))`)
+
+	now := time.Now().UTC().Format(time.RFC3339)
+	db.Exec(`INSERT INTO qsos (timestamp, callsign, band, mode, sent_exchange, recv_exchange, points)
+		VALUES (?, 'K1ABC', '20M', 'CW', '1D EMA', '2A NH', 2)`, now)
+
+	req := httptest.NewRequest("GET", "/api/stats", nil)
+	rec := httptest.NewRecorder()
+	GetStats(db, rec, req)
+
+	var stats map[string]interface{}
+	json.Unmarshal(rec.Body.Bytes(), &stats)
+
+	bonusPoints, ok := stats["bonus_points"]
+	if !ok {
+		t.Fatal("expected bonus_points field in stats response")
+	}
+	bp, _ := bonusPoints.(float64)
+	// media_publicity = 100, emergency_power = 3 * 100 = 300, total = 400
+	if bp != 400 {
+		t.Errorf("expected bonus_points=400 (100+300), got %v", bp)
+	}
+}
+
+func TestGetStats_ScoreIncludesBonus(t *testing.T) {
+	db := setupStatsTestDB(t)
+
+	// Add a QSO for raw points and multiplier
+	now := time.Now().UTC().Format(time.RFC3339)
+	db.Exec(`INSERT INTO qsos (timestamp, callsign, band, mode, sent_exchange, recv_exchange, points)
+		VALUES (?, 'K1ABC', '20M', 'CW', '1D EMA', '2A NH', 2)`, now)
+
+	// Add a claimed bonus
+	db.Exec(`INSERT OR REPLACE INTO bonus_claims (bonus_id, claimed, count, updated_at)
+		VALUES ('safety_officer', 1, 0, datetime('now'))`)
+
+	req := httptest.NewRequest("GET", "/api/stats", nil)
+	rec := httptest.NewRecorder()
+	GetStats(db, rec, req)
+
+	var stats map[string]interface{}
+	json.Unmarshal(rec.Body.Bytes(), &stats)
+
+	score, _ := stats["score"].(float64)
+	rawPoints, _ := stats["raw_points"].(float64)
+	multiplier, _ := stats["multiplier"].(float64)
+	bonusPoints, _ := stats["bonus_points"].(float64)
+
+	// ARRL formula: score = (rawPoints * multiplier) + bonusPoints
+	// rawPoints=2, multiplier=1, bonusPoints=100 → score=102
+	expectedScore := (rawPoints * multiplier) + bonusPoints
+	if score != expectedScore {
+		t.Errorf("expected score=%v ((%.0f*%.0f)+%.0f), got %v", expectedScore, rawPoints, multiplier, bonusPoints, score)
+	}
+	// Bonus must NOT be multiplied: score should be 102, not (2+100)*1 = 102... hmm both are 102 here
+	// Let's use a better case: rawPoints=2, multiplier=2, bonusPoints=100
+	// Correct: (2*2)+100 = 104. Wrong: (2+100)*2 = 204
+}
+
+func TestGetStats_BonusNotMultiplied(t *testing.T) {
+	db := setupStatsTestDB(t)
+
+	now := time.Now().UTC().Format(time.RFC3339)
+	// Two QSOs on different band/mode = multiplier of 2
+	db.Exec(`INSERT INTO qsos (timestamp, callsign, band, mode, sent_exchange, recv_exchange, points)
+		VALUES (?, 'K1ABC', '20M', 'CW', '1D EMA', '2A NH', 2)`, now)
+	db.Exec(`INSERT INTO qsos (timestamp, callsign, band, mode, sent_exchange, recv_exchange, points)
+		VALUES (?, 'W1AW', '40M', 'SSB', '1D EMA', '1D RI', 1)`, now)
+
+	db.Exec(`INSERT OR REPLACE INTO bonus_claims (bonus_id, claimed, count, updated_at)
+		VALUES ('media_publicity', 1, 0, datetime('now'))`)
+
+	req := httptest.NewRequest("GET", "/api/stats", nil)
+	rec := httptest.NewRecorder()
+	GetStats(db, rec, req)
+
+	var stats map[string]interface{}
+	json.Unmarshal(rec.Body.Bytes(), &stats)
+
+	score, _ := stats["score"].(float64)
+	// rawPoints=3, multiplier=2, bonusPoints=100
+	// Correct ARRL: (3*2)+100 = 106
+	// Wrong (bonus multiplied): (3+100)*2 = 206
+	if score != 106 {
+		t.Errorf("expected score=106 (bonus added after multiplier), got %v", score)
 	}
 }

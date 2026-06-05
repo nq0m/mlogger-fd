@@ -43,6 +43,15 @@ func setupCabrilloTestDB(t *testing.T) *sql.DB {
 	if err != nil {
 		t.Fatalf("failed to create station_config table: %v", err)
 	}
+	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS bonus_claims (
+		bonus_id TEXT PRIMARY KEY,
+		claimed INTEGER NOT NULL DEFAULT 0,
+		count INTEGER NOT NULL DEFAULT 0,
+		updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+	)`)
+	if err != nil {
+		t.Fatalf("failed to create bonus_claims table: %v", err)
+	}
 	t.Cleanup(func() { db.Close() })
 	return db
 }
@@ -182,6 +191,64 @@ func TestGenerate_ScoreCalculation(t *testing.T) {
 
 	if !strings.Contains(result, "CLAIMED-SCORE:") {
 		t.Error("missing CLAIMED-SCORE header")
+	}
+}
+
+func TestGenerate_ScoringWithBonus(t *testing.T) {
+	db := setupCabrilloTestDB(t)
+
+	ts := "2026-06-27T18:00:00Z"
+	db.Exec(`INSERT INTO qsos (timestamp, callsign, band, mode, sent_exchange, recv_exchange, points)
+		VALUES (?, 'K1ABC', '20M', 'CW', '1D EMA', '2A NH', 2)`, ts)
+	db.Exec(`INSERT INTO qsos (timestamp, callsign, band, mode, sent_exchange, recv_exchange, points)
+		VALUES (?, 'W1AW', '40M', 'SSB', '1D EMA', '1D RI', 1)`, ts)
+
+	// Add a claimed bonus
+	db.Exec(`INSERT OR REPLACE INTO bonus_claims (bonus_id, claimed, count, updated_at)
+		VALUES ('media_publicity', 1, 0, datetime('now'))`)
+
+	result, err := Generate(db)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if !strings.Contains(result, "CLAIMED-SCORE:") {
+		t.Error("missing CLAIMED-SCORE header")
+	}
+
+	// rawPoints=3, multiplier=2, bonus=100
+	// ARRL: (3*2)+100 = 106
+	if !strings.Contains(result, "CLAIMED-SCORE: 106") {
+		t.Error("expected CLAIMED-SCORE: 106 (bonus added after multiplier)")
+	}
+}
+
+func TestGenerate_BonusSOAPBOX(t *testing.T) {
+	db := setupCabrilloTestDB(t)
+
+	ts := "2026-06-27T18:00:00Z"
+	db.Exec(`INSERT INTO qsos (timestamp, callsign, band, mode, sent_exchange, recv_exchange, points)
+		VALUES (?, 'K1ABC', '20M', 'CW', '1D EMA', '2A NH', 2)`, ts)
+
+	db.Exec(`INSERT OR REPLACE INTO bonus_claims (bonus_id, claimed, count, updated_at)
+		VALUES ('media_publicity', 1, 0, datetime('now'))`)
+	db.Exec(`INSERT OR REPLACE INTO bonus_claims (bonus_id, claimed, count, updated_at)
+		VALUES ('safety_officer', 1, 0, datetime('now'))`)
+
+	result, err := Generate(db)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if !strings.Contains(result, "SOAPBOX: Bonus:") {
+		t.Error("expected SOAPBOX: Bonus: lines in Cabrillo output")
+	}
+	if !strings.Contains(result, "SOAPBOX: Total Bonus Points") {
+		t.Error("expected SOAPBOX: Total Bonus Points line in Cabrillo output")
+	}
+	// media_publicity=100 + safety_officer=100 = 200 total bonus
+	if !strings.Contains(result, "SOAPBOX: Total Bonus Points = 200") {
+		t.Error("expected SOAPBOX: Total Bonus Points = 200")
 	}
 }
 
