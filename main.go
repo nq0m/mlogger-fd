@@ -63,6 +63,9 @@ func main() {
 		r.Put("/bonuses", func(w http.ResponseWriter, r *http.Request) {
 			handler.PutBonuses(database, w, r)
 		})
+		r.Get("/backup/db", func(w http.ResponseWriter, r *http.Request) {
+			handler.DownloadBackup(database, dbPath, w, r)
+		})
 		r.Post("/sync", func(w http.ResponseWriter, r *http.Request) {
 			handler.SyncQSOs(database, hub, w, r)
 		})

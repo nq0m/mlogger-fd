@@ -10,6 +10,7 @@
 	import { audioState, toggleMute } from '$lib/audio.svelte.js';
 	import { queueState } from '$lib/sync.svelte.js';
 	import { loadCache } from '$lib/stores/qso.svelte.js';
+	import { downloadBackup } from '$lib/api.js';
 
 	let theme = $state('light');
 	let backupToast = $state(false);
@@ -44,6 +45,13 @@
 	function exportCabrillo() {
 		window.location.href = '/api/export/cabrillo';
 	}
+
+	function handleBackup() {
+		downloadBackup();
+		backupToast = true;
+		if (backupTimer) clearTimeout(backupTimer);
+		backupTimer = setTimeout(() => { backupToast = false; }, 2000);
+	}
 </script>
 
 <div class="header-bar">
@@ -69,6 +77,7 @@
 		<StationConfig />
 		<BonusTracker />
 		<button class="export-btn" onclick={exportCabrillo}>Export Cabrillo</button>
+		<button class="export-btn" onclick={handleBackup}>↓ Backup</button>
 	</div>
 	{#if backupToast}
 		<span class="saved-msg" style="position:absolute; top:44px; right: 8px; z-index: 101; background: var(--color-surface); padding: 4px 12px; border-radius: 6px; font-size: 14px; font-weight: 600; color: var(--color-success);">Backup downloaded</span>

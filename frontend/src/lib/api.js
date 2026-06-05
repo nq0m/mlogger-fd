@@ -104,3 +104,7 @@ export async function putBonuses(data) {
 	}
 	return json;
 }
+
+export function downloadBackup() {
+	window.location.href = `${BASE_URL}/api/backup/db`;
+}
