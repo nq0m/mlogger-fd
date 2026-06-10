@@ -109,9 +109,7 @@ func spaHandler() http.HandlerFunc {
 	fileServer := http.FileServer(http.FS(content))
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		path := r.URL.Path
-
-		f, err := content.Open(path)
+		f, err := content.Open(r.URL.Path[1:])
 		if err != nil {
 			r.URL.Path = "/"
 		} else {

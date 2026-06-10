@@ -1,6 +1,5 @@
-import db, { getQueuedQsos, getQueueCount, clearQueued } from '$lib/db.js';
+import { getQueuedQsos, getQueueCount, clearQueued } from '$lib/db.js';
 import { syncBatch } from '$lib/api.js';
-import { wsState } from '$lib/ws.svelte.js';
 
 export const queueState = $state({ queueLength: 0, syncing: false });
 
@@ -30,22 +29,18 @@ export async function flushSyncQueue() {
 
 let syncTimer = null;
 
-$effect(() => {
-	if (wsState.connected) {
-		flushSyncQueue();
+export function startSync() {
+	flushSyncQueue();
+	if (!syncTimer) {
 		syncTimer = setInterval(flushSyncQueue, 30000);
-	} else {
-		if (syncTimer) {
-			clearInterval(syncTimer);
-			syncTimer = null;
-		}
 	}
-	return () => {
-		if (syncTimer) {
-			clearInterval(syncTimer);
-			syncTimer = null;
-		}
-	};
-});
+}
+
+export function stopSync() {
+	if (syncTimer) {
+		clearInterval(syncTimer);
+		syncTimer = null;
+	}
+}
 
 refreshQueueCount();

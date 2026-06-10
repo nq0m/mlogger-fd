@@ -2,6 +2,7 @@
 // Implements: SYNC-02 (client-side WebSocket listener for real-time QSO updates)
 import { qsos, fetchStats } from '$lib/stores/qso.svelte.js';
 import { addToCache } from '$lib/db.js';
+import { startSync, stopSync } from '$lib/sync.svelte.js';
 
 // Use object-based $state since Svelte 5 forbids reassigning exported $state variables
 export const wsState = $state({ connected: false });
@@ -33,6 +34,7 @@ export function connectWebSocket() {
 
 		ws.onopen = () => {
 			wsState.connected = true;
+			startSync();
 			if (reconnectTimer) {
 				clearTimeout(reconnectTimer);
 				reconnectTimer = null;
@@ -81,6 +83,7 @@ export function connectWebSocket() {
 
 		ws.onclose = () => {
 			wsState.connected = false;
+			stopSync();
 			// Reconnect after 2 seconds (LAN-appropriate)
 			reconnectTimer = setTimeout(connect, 2000);
 		};
